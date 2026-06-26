@@ -5,7 +5,7 @@
 # - dbサービスは含まれません（AWS RDSを使用）
 # - runserverではなくGunicornを使用
 # - Nginxコンテナを追加
-# - wait-for-itは使用しない（RDSは常時起動のため）
+# - wait-for-itでRDSの疎通を待ってから起動
 # ======================================================================
 
 version: '3.8'
@@ -36,6 +36,7 @@ services:
       sh -c "
       mkdir -p /src/staticfiles /src/mediafiles &&
       chown -R appuser:appgroup /src &&
+      wait-for-it.sh "$${MYSQL_HOST}:$${MYSQL_PORT:-3306}" -t 60 -- &&
       su appuser -c 'python manage.py migrate' && 
       su appuser -c 'python manage.py collectstatic --noinput' &&
       exec su appuser -c 'exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 60 --access-logfile - --error-logfile - --log-level info'
@@ -127,4 +128,5 @@ volumes:
 # - dbサービスは含まれていません（AWS RDSを使用）
 # - .envファイルのMYSQL_HOSTにRDSエンドポイントを設定してください
 # - DJANGO_SETTINGS_MODULE=config.settings.prod に設定してください
+# - 起動時にMYSQL_HOST:MYSQL_PORTへの接続を待機します
 # - 初回起動時は自動的にmigrateとcollectstaticが実行されます

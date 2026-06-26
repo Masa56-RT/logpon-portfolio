@@ -1,28 +1,31 @@
 from .base import *
 import os
 
+def env_bool(name, default=False):
+    return os.getenv(name, str(default)).lower() in ('1', 'true', 'yes', 'on')
+
+def env_list(name, default=''):
+    return [item.strip() for item in os.getenv(name, default).split(',') if item.strip()]
+
 DEBUG = False
-ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = env_list('DJANGO_ALLOWED_HOSTS')
 
 # ========================================
 # プロキシ設定（重要！）
 # ========================================
 
-# ALBのX-Forwarded-Protoヘッダーを信頼
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+if env_bool('DJANGO_SECURE_PROXY_SSL_HEADER', False):
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # ========================================
 # CSRF設定
 # ========================================
 
-CSRF_TRUSTED_ORIGINS = [
-            'https://logpon.com',
-                'https://*.logpon.com',
-                ]
+CSRF_TRUSTED_ORIGINS = env_list('DJANGO_CSRF_TRUSTED_ORIGINS')
 
 CSRF_COOKIE_NAME = 'csrftoken'
 CSRF_COOKIE_AGE = 31536000
-CSRF_COOKIE_SECURE = True  # ← これが使えるようになる
+CSRF_COOKIE_SECURE = env_bool('DJANGO_CSRF_COOKIE_SECURE', False)
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = 'Lax'
 
@@ -33,19 +36,26 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_AGE = 1209600
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_NAME = 'logpon_sessionid'
-SESSION_COOKIE_SECURE = True  # ← これも使えるようになる
+SESSION_COOKIE_SECURE = env_bool('DJANGO_SESSION_COOKIE_SECURE', False)
 SESSION_COOKIE_SAMESITE = 'Lax'
 
 # ========================================
 # その他のセキュリティ設定
 # ========================================
 
-SECURE_SSL_REDIRECT = False  # ALBでリダイレクト済み
-SECURE_HSTS_SECONDS = 31536000
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+SECURE_SSL_REDIRECT = env_bool('DJANGO_SECURE_SSL_REDIRECT', False)
+SECURE_HSTS_SECONDS = int(os.getenv('DJANGO_SECURE_HSTS_SECONDS', '0'))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool('DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS', False)
+SECURE_HSTS_PRELOAD = env_bool('DJANGO_SECURE_HSTS_PRELOAD', False)
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
+
+# ========== メール設定 ==========
+EMAIL_BACKEND = os.getenv(
+    'EMAIL_BACKEND',
+    'django.core.mail.backends.dummy.EmailBackend',
+)
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'no-reply@example.com')
 
 # ========== ログ設定 ==========
 LOGGING = {
@@ -87,7 +97,7 @@ if USE_S3:
         'AWS_S3_CUSTOM_DOMAIN',
         f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
     )
-    SOUNDS_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME', 'logpon-sounds')
+    SOUNDS_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME', '')
 
 # ========== 静的ファイル ==========
 STATIC_ROOT = BASE_DIR / 'staticfiles'
