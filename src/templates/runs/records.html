@@ -1,0 +1,71 @@
+{% extends "common/base.html" %}
+{% load static %}
+
+{% block title %}実施記録確認{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'css/runs/records.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- 最初のdivはauth-wrapperと共通化して問題ないかを調べる -->
+<div class="records-page">
+    
+    <!-- 上画面 -->
+    <div class="upper-disp">
+        <h2>実施記録確認</h2>
+        <div class="records-date-select">
+            <p>年月日：</p>
+            <input id="recordsDate" type="date">
+        </div>
+    </div>
+    
+    <div class="records-zone">
+        <!-- 左画面 -->
+        <div class="left-disp">
+
+            <p class="records-label">プログラム：</p>
+            <section id="recordedProgramList">
+                <!-- 実行したプログラムはバックエンドから取得する -->
+                <!-- program-runsのタイマーのクラスとcurrentOneで統一すれば、選んだプログラムのデザインが統一できる -->
+            </section>
+
+        </div>
+
+        <!-- 右画面 -->
+        <div class="right-disp">
+            
+            <p class="records-label">タイマー：</p>
+            <section id="recordedTimerList">
+                <!-- タイマーはバックエンドから取得したデータで作成する -->
+            </section>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- メモモーダル -->
+<section id="modal" class="modal" hidden>
+    <div id="modalOverlay">
+        <div id="modalArea">
+            <div class="modal-close">
+                <button type="button" id="closeBtn" class="modal-close-btn">×</button>
+            </div>
+            <h2 id="memoModalTitle" class="modal-title">メモ作成</h2>
+            <p id="timerNameSnapshot">タイマー名</p>
+            <div class="modal-form">
+                <label for="memoTextarea" class="modal-label">メモ：</label>
+                <textarea id="memoTextarea" class="modal-textarea"></textarea>
+            </div>
+            <div>
+                <button class="btn modal-btn" type="button" id="memoSendBtn">作成</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- JSファイル -->
+ <script src="{% static 'js/runs/records.js' %}" defer></script>
+
+{% endblock %}

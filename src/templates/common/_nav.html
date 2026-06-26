@@ -1,0 +1,47 @@
+{% if user.is_authenticated %}
+    <li>
+        <a class="{% if request.resolver_match.url_name in 'program-runs' or request.resolver_match.url_name == 'program-runs-detail' %}
+        is-active{% endif %}" href="{% url 'runs:program-runs' %}">プログラム<br>実行</a>
+    </li>
+    <li>
+        <!-- programsのurls.pyができたらhrefの中を入れる -->
+        <a class="{% if request.resolver_match.view_name == 'programs:list' %}is-active{% endif %}" 
+        href="{% url 'programs:list' %}">プログラム<br>作成・一覧</a>
+    </li>
+    <li>
+        <!-- timersのurls.pyができたらhrefの中を入れる -->
+        <a class="{% if request.resolver_match.view_name == 'timers:list' %}is-active{% endif %}" 
+        href="{% url 'timers:list' %}">タイマー<br>作成・一覧</a>
+    </li>
+    <li>
+        <a class="{% if request.resolver_match.url_name == 'records' %}is-active{% endif %}" 
+        href="{% url 'runs:records' %}">実施記録</a>
+    </li>
+    <li>
+        <a class="{% if request.resolver_match.url_name == 'daily-reports' %}is-active{% endif %}" 
+        href="{% url 'runs:daily-reports' %}">日報</a>
+    </li>
+    
+    <li>
+        <form method="post" action="{% url 'users:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="logout-btn">
+            <iconify-icon icon="material-symbols:logout-rounded" id="logout"></iconify-icon>
+        </button>
+        </form>
+    </li>
+
+
+{% else %}
+    <li>
+        <a class="{% if request.resolver_match.url_name == 'login' %}is-active{% endif %}" 
+        href="{% url 'users:login' %}">ログイン</a>
+    </li>
+    <li>
+        <a class="{% if request.resolver_match.url_name == 'signup' %}is-active{% endif %}" 
+        href="{% url 'users:signup' %}">新規登録</a>
+    </li>
+    <li><a class="{% if request.resolver_match.url_name == 'password-reset' %}is-active{% endif %}" 
+        href="{% url 'users:password-reset' %}">パスワード<br>再設定</a>
+    </li>
+{% endif %}

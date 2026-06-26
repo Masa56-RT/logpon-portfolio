@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <title>{% block title %}{% endblock %} | ログぽん</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=M+PLUS+1p&display=swap" rel="stylesheet">
+        <!-- staticのパスを書き換えるところから続き -->
+        <link rel="stylesheet" href="{% static 'css/common/token.css' %}">
+        <link rel="stylesheet" href="{% static 'css/common/base.css' %}">
+        <link rel="stylesheet" href="{% static 'css/common/common.css' %}">
+        <link rel="icon" href="{% static '/img/logpon_favicon.ico' %}">
+        {% block page_css %}{% endblock %}
+        <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js" defer></script>
+        <script src="{% static 'js/common/base.js' %}" defer></script>
+    </head>
+    <body>
+        <div class="page">
+            <header>
+                <div class="container start-header">
+                    <div class="logo-and-user">
+                        <h1>
+                            <!-- ログイン前はログイン画面、ログイン後はプログラム実行画面に遷移 -->
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'runs:program-runs' %}">
+                        {% else %}
+                            <a href="{% url 'users:login' %}">
+                        {% endif %}
+                                <img src="{% static 'img/logpon_logotitle.png' %}" class="title-img" alt="ログぽんタイトル" >
+                            </a>
+                        </h1>
+                        <!-- ロゴタイトルの横のユーザー名と設定画面への遷移ボタンはログイン後のみ表示 -->
+                        {% if user.is_authenticated %}
+                        <div class="username">
+                            <!-- ユーザーネームを後で変数に変える -->
+                            <p>{{ request.user.username }}さん</p>
+                            <!-- aタグに後でhrefを入れる（settingsページを新しく作る） -->
+                            <a href="{% url 'users:profile' %}">
+                                <iconify-icon icon="uil:setting" id="setting"></iconify-icon>
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <nav>
+                        <ul class="start-nav">
+                            {% include 'common/_nav.html' %}
+                            <!-- ナビの場合分けを _nav.html に切り出し -->
+                            <!-- ここまで -->
+                        </ul>
+                    </nav>
+                </div>
+            </header>
+
+            <main>
+                {% block content %}{% endblock %}
+            </main>
+            
+            <footer>
+                <div class="footer-wrapper">
+                    <p>&copy; 2026 Team E - Winter Hackathon</p>
+                </div>
+            </footer>
+        </div>
+        {% if messages %}
+        <script>
+            window.__DJANGO_MESSAGES__ = [
+                {% for message in messages %}
+                    {
+                        level: "{{ message.tags }}",
+                        text: "{{ message|escapejs }}"
+                    }{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ];
+        </script>
+        {% endif %}
+        
+        <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    </body>
+</html>

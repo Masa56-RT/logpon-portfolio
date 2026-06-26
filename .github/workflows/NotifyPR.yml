@@ -1,0 +1,31 @@
+# ファイルの目的がわかるように記載
+name: Notify Mattermost on PR to develop & main
+
+# 処理の起動条件を定義
+on:
+  # プルリクエストがオープン（作成）
+  workflow_dispatch:
+  pull_request:
+    types: [opened]
+    # ターゲットブランチがdevelop, mainブランチ
+    branches:
+      - develop
+      - main
+
+# ジョブの定義
+jobs:
+
+  # 「notify」はジョブの名前（何でもOK）
+  notify:
+
+    # GitHubが提供する最新のUbuntu環境（仮想マシン） 上で実行
+    runs-on: ubuntu-latest
+
+    # 処理の中身を定義
+    steps:
+      - name: Send message to Mattermost
+        run: |
+          curl -X POST -H 'Content-Type: application/json' \
+            -d '{
+              "text": "@all\nプルリクエストが作成されたのでご確認ください！\n●リポジトリ: '${{ github.repository }}'\n●PRタイトル: \"${{ github.event.pull_request.title }}\"\n●作成者: ${{ github.event.pull_request.user.login }}\n●URL: ${{ github.event.pull_request.html_url }}"
+            }' ${{ secrets.MATTERMOST_WEBHOOK_URL }}

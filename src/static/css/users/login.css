@@ -1,0 +1,26 @@
+.auth-wrapper {
+    margin: 93px auto 200px;
+    gap: 40px;
+}
+/* ここまで */
+
+.auth-wrapper h2 {
+    font-size: 1.75rem;
+    margin: 0 auto 40px;
+}
+
+/* 共通CSSに切り出してbuttonタグのborderだけ個別に指定 */
+.btn {
+    border: none;
+    margin-top: 20px;
+}
+/* ここまで */
+
+
+.forgot-password {
+    color: var(--color-text-main);
+}
+
+.forgot-password:hover {
+    border-bottom: solid 1px var(--color-text-main);
+}

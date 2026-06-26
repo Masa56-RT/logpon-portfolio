@@ -1,0 +1,12 @@
+:root {
+    --color-primary: #aae3e3;
+    --color-accent: linear-gradient(to bottom right, #aae3e3, #53b5da);
+    --color-header-current-text: #6dd6d9;
+    --color-text-main: #222222;
+    --color-text-muted: #7f7f7f;
+    --color-frame: #d9d9d9;
+    --color-finished-timer-bg: #eeeeee;
+    --color-bg: #ffffff;
+    --color-selected-bg: #E4FEFF;
+    --color-warning: #ff0000;
+}

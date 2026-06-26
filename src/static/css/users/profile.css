@@ -1,0 +1,148 @@
+.profile-page {
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 10px;
+    gap: 40px;
+    align-items: center;
+    flex: 1;
+}
+
+.page-title {
+    font-size: 1.5rem;
+    padding-top: 20px;
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 300px;
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.profile-grid::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    transform: translateX(-0.5px);
+    background: var(--color-frame, #d9d9d9);
+    pointer-events:none;
+}
+
+.profile-card {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.panel-title {
+    font-size: 1.25rem;
+    align-self: center;
+}
+
+.panel-descrip {
+    align-self: center;
+    text-align: center;
+}
+
+.edit-email {
+    margin-bottom: 40px;
+}
+
+.edit-row__value {
+    display: inline-flex;
+    font-size: 1.25rem;
+    padding-left: 14px;
+    height: 44px;
+    margin: 2px 0 10px;
+    align-items: flex-end;
+    box-sizing: border-box;
+    padding-bottom: 10px;
+}
+
+.edit-row__label {
+    font-size: 0.875rem;
+}
+
+.edit-row__badge {
+    font-size: 0.75rem;
+    background: var(--color-selected-bg);
+    height: 14px;
+    border-radius: 2px;
+    margin-left: 5px;
+    border: 1px solid var(--color-frame);
+    padding: 0 2px;
+}
+
+input {
+    box-sizing: border-box;
+    width: 388px;
+    height: 44px;
+    margin: 2px 0 10px;
+}
+
+.is-hidden {
+    display: none;
+}
+
+.edit-btn {
+    width: 180px;
+    border: none;
+}
+
+.row-actions {
+    display: flex; 
+    gap: 28px;
+}
+
+.save-btn, .cancel-btn {
+    width: 180px;
+}
+
+.save-btn {
+    box-sizing: border-box;
+    border: none;
+}
+
+.cancel-btn {
+    color: var(--color-header-current-text);
+    border: 2px solid var(--color-header-current-text);
+    background: none;
+}
+
+.pw-form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.pw-input-wrap {
+    position: relative;
+}
+
+.pw-toggle {
+    border: none;
+    background: none;
+    position: absolute;
+    top: 20%;
+    transform: translateY(0%);
+    right: 5px;
+}
+
+.pw-toggle:hover {
+    opacity: 0.8;
+}
+
+.pwToggleIcon {
+    font-size: 1.5rem;
+    color: var(--color-text-muted);
+}
+
+.pass-btn {
+    border: none;
+}

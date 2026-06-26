@@ -1,0 +1,124 @@
+.report-page {
+    display: flex;
+    flex-direction: column;
+    max-width: 800px;
+    margin: 0 auto;
+    flex: 1;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.page-title {
+    text-align: center;
+    align-self: center;
+    font-size: 1.5rem;
+}
+
+.page-desc {
+    align-self: center;
+    font-size: 1.25rem;
+}
+
+.summary {
+    margin-bottom: 50px;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    margin:7px 0;
+}
+
+.copy-row {
+    display: flex;
+    height:44px;
+    gap: 5px;
+    align-items: center;
+}
+
+.time-box {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    height: 44px;
+}
+
+.time-value {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 60px;
+    height: 100%;
+    border: 1px solid var(--color-frame);
+    border-radius: 5px;
+    font-size: 1.25rem;
+}
+
+.time-unit {
+    font-size: 1.25rem;
+}
+
+.copy-btn {
+    border: none;
+    width: 44px;
+    margin-right: 30px;
+    cursor: pointer;
+}
+
+.copy-btn:last-of-type {
+  margin-right: 0;
+}
+
+.copyIcon {
+    font-size: 2.25rem;
+}
+
+.report-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-bottom: 20px;
+}
+
+.report-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.report-textarea {
+    width: 100%;
+    flex: 1;
+    border: 2px solid var(--color-frame);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 1rem;
+    line-height: 1.6;
+    resize: none; /* 画面いっぱい運用なら無しが気持ちいい */
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%) translateY(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #333;
+  color: #fff;
+  z-index: 9999;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast[data-type="error"] {
+  background: #b00020;
+}

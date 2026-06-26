@@ -1,0 +1,216 @@
+{% extends "common/base.html" %}
+{% load static %}
+
+{% block title %}タイマー作成・一覧{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'css/timers/timers.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- 最初のdivはauth-wrapperと共通化して問題ないかを調べる -->
+<div class="timers-page">
+    
+    <!-- 左画面 -->
+    <div class="left-disp">
+
+        <h3>集中</h3>
+        <section class="focus-timers">
+            <div id="focusTimerList">
+            <!-- ここにバックエンドから取得した「集中」のタイマーを入れる -->
+            {% for row in rows %}
+                {% with t=row.timer %}
+                {% if t.get_category_display == "集中" %}
+                    <div class="oneTimer"
+                        data-timer-id="{{ t.id }}"
+                        data-timer-name="{{ t.name }}"
+                        data-duration-sec="{{ t.duration_seconds }}"
+                        data-category-value="{{ t.category }}"
+                        data-category-label="{{ t.get_category_display }}"
+                        data-sound-value="{{ t.sound_id|default:'' }}">
+                    <p class="timerName">{{ t.name }}</p>
+                    <p class="duration">{% widthratio t.duration_seconds 60 1 %}分</p>
+                    <button class="delete-btn" type="button">
+                        <iconify-icon icon="iconamoon:trash" class="deleteIcon"></iconify-icon>
+                    </button>
+                    </div>
+                {% endif %}
+                {% endwith %}
+            {% empty %}
+                <p class="empty">タイマーが登録されていません</p>
+            {% endfor %}
+            </div>
+            <div class="add-btn">
+            <button id="focusTimerAdd" type="button">
+                <iconify-icon icon="uil:plus" class="addIcon"></iconify-icon>
+            </button>
+            </div>
+        </section>
+    </div>
+
+    <!-- 右画面 -->
+    <div class="right-disp">
+        
+        <h3>休憩・リフレッシュ</h3>
+        <section class="other-timers">
+            <div id="otherTimerList">
+            <!-- ここにバックエンドから取得した「休憩・リフレッシュ」のタイマーを入れる -->
+            {% for row in rows %}
+                {% with t=row.timer %}
+                {% if t.get_category_display != "集中" %}
+                    <div class="oneTimer"
+                        data-timer-id="{{ t.id }}"
+                        data-timer-name="{{ t.name }}"
+                        data-duration-sec="{{ t.duration_seconds }}"
+                        data-category-value="{{ t.category }}"
+                        data-category-label="{{ t.get_category_display }}"
+                        data-sound-value="{{ t.sound_id|default:'' }}">
+                    <p class="timerName">{{ t.name }}</p>
+                    <p class="duration">{% widthratio t.duration_seconds 60 1 %}分</p>
+                    <button class="delete-btn" type="button">
+                        <iconify-icon icon="iconamoon:trash" class="deleteIcon"></iconify-icon>
+                    </button>
+                    </div>
+                {% endif %}
+                {% endwith %}
+            {% empty %}
+                <p class="empty">タイマーが登録されていません</p>
+            {% endfor %}
+            </div>
+            <div class="add-btn">
+            <button id="otherTimerAdd" type="button">
+                <iconify-icon icon="uil:plus" class="addIcon"></iconify-icon>
+            </button>
+            </div>
+        </section>
+
+    </div>
+    
+</div>
+
+<!-- タイマー作成・編集モーダル -->
+<section id="modal" class="modal" hidden>
+    <div id="modalOverlay">
+        <div id="modalArea">
+          
+            <div class="modal-close">
+                <button type="button" id="closeBtn" class="modal-close-btn">×</button>
+            </div>
+            <!-- 上の削除ボタンまでは共通 -->
+            <!-- 作成・編集用 -->
+            <section id="createUpdateContent" class="modal-section">
+                <h2 id="timerModalTitle" class="modal-title">タイマー作成</h2>
+
+                <div id="usageWarningEdit" class="usage-warning" hidden>
+                <p id="usageTextEdit" class="usage-text">警告</p>
+                </div>
+
+                <!-- 作成用フォーム -->
+                <form id="createForm" method="post" action="{% url 'timers:list' %}">
+                    {% csrf_token %}
+                    {{ create_form.non_field_errors }}
+
+                    <div class="modal-form">
+                        {{ create_form.name.label_tag }}
+                        {{ create_form.name }}
+                        {{ create_form.name.errors }}
+                    </div>
+                    <div class="modal-form">
+                        {{ create_form.duration_minutes.label_tag }}
+                        {{ create_form.duration_minutes }}
+                        {{ create_form.duration_minutes.errors }}
+                    </div>
+                    <div class="modal-form">
+                        {{ create_form.category.label_tag }}
+                        {{ create_form.category }}
+                        {{ create_form.category.errors }}
+                    </div>
+                    <div class="modal-form">
+                        {{ create_form.sound.label_tag }}
+                        {{ create_form.sound }}
+                        {{ create_form.sound.errors }}
+                        <small>（未選択OK）</small>
+                    </div>
+                    <div>
+                        <button class="btn modal-btn" type="submit" id="timerSendBtn">作成</button>
+                    </div>
+                    <p id="formError" hidden>
+                        <!-- エラーがあった時のメッセージを入れる -->
+                    </p>
+                </form>
+
+                <!-- 編集用フォーム -->
+                <form id="editForm" method="post" action="" hidden
+                    data-edit-action-template="{% url 'timers:edit' 0 %}">
+                    {% csrf_token %}
+
+                    <div class="modal-form">
+                        <label for="edit-name">タイマー名</label>
+                        <input id="edit-name" name="name">
+                    </div>
+
+                    <div class="modal-form">
+                        <label for="edit-duration">時間（分）</label>
+                        <input id="edit-duration" name="duration_minutes" type="number" min="1" step="1">
+                    </div>
+
+                    <div class="modal-form">
+                        <label for="edit-category">カテゴリー</label>
+                        <select id="edit-category" name="category"></select>
+                    </div>
+
+                    <div class="modal-form">
+                        <label for="edit-sound">サウンド</label>
+                        <select id="edit-sound" name="sound"></select>
+                        <small>（未選択OK）</small>
+                    </div>
+
+                    <button class="btn modal-btn" type="submit">更新</button>
+                </form>
+            </section>
+            <!-- ここまで作成・編集用 -->
+
+            <!-- 削除用 -->
+            <section id="deleteContent" class="modal-section" hidden>
+                <h2 id="timerDeleteModalTitle" class="modal-title">タイマー削除</h2>
+                <div id="usageWarningDelete" class="usage-warning" hidden>
+                    <p id="usageTextDelete" class="usage-text">警告</p>
+                </div>
+
+                <!-- 削除前の確認用表示 -->
+                <div id="beforeDelete" hidden>
+                    <p class="delete-description">このタイマーを削除します。</p>
+
+                    <div>
+                        <p id="deleteTimerName"></p>
+                        <p id="deleteTimerDuration"></p>
+                        <p id="deleteTimerCategory"></p>
+                    </div>
+
+                    <form id="deleteForm" method="post" action=""
+                     data-delete-action-template="{% url 'timers:delete' 0 %}">
+                    {% csrf_token %}
+                        <button class="btn modal-btn" type="submit">削除</button>
+                    </form>
+                    
+                    <p id="deleteError" hidden></p>
+                </div>
+                
+            </section>
+
+        </div>
+    </div>
+</section>
+
+<!-- JSファイル -->
+<script id="soundMap" type="application/json">
+{
+  {% for s in sounds %}
+    "{{ s.id }}": "{{ s.file_path|escapejs }}"{% if not forloop.last %},{% endif %}
+  {% endfor %}
+}
+</script>
+
+ <script src="{% static 'js/timers/timers.js' %}" defer></script>
+
+{% endblock %}

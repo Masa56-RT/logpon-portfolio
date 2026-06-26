@@ -1,0 +1,42 @@
+[
+  {
+    "model": "programs.program",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "program_name": "河川の勉強セット",
+      "created_at": "2026-02-01T00:00:00Z",
+      "updated_at": "2026-02-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "programs.program",
+    "pk": 2,
+    "fields": {
+      "user": 1,
+      "program_name": "短時間集中セット",
+      "created_at": "2026-02-01T00:00:00Z",
+      "updated_at": "2026-02-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "programs.program",
+    "pk": 3,
+    "fields": {
+      "user": 1,
+      "program_name": "テスト用プログラム（短縮）",
+      "created_at": "2026-02-01T00:00:00Z",
+      "updated_at": "2026-02-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "programs.program",
+    "pk": 4,
+    "fields": {
+      "user": 1,
+      "program_name": "ハッカソン",
+      "created_at": "2026-02-01T00:00:00Z",
+      "updated_at": "2026-02-01T00:00:00Z"
+    }
+  }
+]

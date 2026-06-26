@@ -1,0 +1,202 @@
+html {
+    font-size: 16px;
+    font-family: "M PLUS 1p", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+a {
+    text-decoration: none;
+}
+
+a img:hover {
+    opacity: 0.6;
+}
+
+.page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    max-width: 1200px;
+    height: 64px;
+    margin: 0 auto;
+}
+
+header {
+    background-color: var(--color-primary);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.start-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-and-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+h1 {
+    width: 194px;
+    height: 37px;
+    border-radius: 14px;
+    background-color: var(--color-bg);
+}
+
+h1 a {
+    display: flex;
+    justify-content: center;
+}
+
+.title-img {
+    width: 156px;
+}
+
+.username {
+    display: flex;
+    align-items: center;
+    color: var(--color-bg);
+    gap: 5px;
+}
+
+.username p {
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+#setting {
+    font-size: 30px;
+    padding-top: 2px;
+    color: var(--color-bg);
+}
+
+#setting:hover {
+    opacity: 0.6;
+}
+
+nav {
+    height: 100%;
+}
+
+.start-nav {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0;
+    height: 100%;
+}
+
+.start-nav li {
+    list-style: none;
+    font-size: 0.875rem;
+    text-align: center; 
+    color: var(--color-bg);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;   
+}
+
+.start-nav a {
+    color: var(--color-bg);
+    font-weight: 800;
+    padding: 10px 18px;
+}
+
+.start-nav a:hover {
+    text-decoration: underline;
+}
+
+.start-nav a.is-active {
+    color: var(--color-header-current-text);
+}
+
+.start-nav a.is-active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 10px;
+    bottom: 0;
+    background: var(--color-bg);
+    border-radius: 3px 3px 0 0;
+    z-index: -1;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+footer {
+    background-color: var(--color-primary);
+}
+.footer-wrapper {
+    max-width: 1200px;
+    height: 32px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-wrapper p {
+    color: var(--color-bg);
+    font-size: 0,875rem;
+}
+
+.logout-btn {
+    border: none;
+    background: none;
+}
+
+#logout {
+    color: var(--color-bg);
+    font-size: 40px;
+}
+
+#logout:hover {
+    opacity: 0.6;
+}
+
+/* djangoからのメッセージをトースト化 */
+/* 共通トースト */
+.toast{
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: white;
+  background: #111827;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s, transform .2s;
+  z-index: 9999;
+}
+
+/* 下トースト（success） */
+.toast.bottom{
+  bottom: 40px;
+}
+
+/* 上トースト（error） */
+.toast.top{
+  top: 24px;
+}
+
+/* 表示 */
+.toast.show{
+  opacity: 1;
+}

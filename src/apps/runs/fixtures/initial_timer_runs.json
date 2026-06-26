@@ -1,0 +1,123 @@
+[
+  {
+    "model": "runs.timerrun",
+    "pk": 1,
+    "fields": {
+      "order_index_snapshot": 1,
+      "timer_name_snapshot": "集中 25分",
+      "duration_sec_snapshot": 1500,
+      "sound_file_snapshot": "sounds/bell.mp3",
+      "category_snapshot": "focus",
+      "status": "running",
+      "started_at": "2026-02-09T09:00:00Z",
+      "ended_at": null,
+      "paused_at": null,
+      "elapsed_sec": 120,
+      "memo": "ウォームアップ中",
+      "created_at": "2026-02-09T09:00:00Z",
+      "updated_at": "2026-02-09T09:02:00Z",
+      "program_run": 1
+    }
+  },
+  {
+    "model": "runs.timerrun",
+    "pk": 2,
+    "fields": {
+      "order_index_snapshot": 2,
+      "timer_name_snapshot": "休憩 5分",
+      "duration_sec_snapshot": 300,
+      "sound_file_snapshot": "sounds/beep2.mp3",
+      "category_snapshot": "break",
+      "status": "pending",
+      "started_at": null,
+      "ended_at": null,
+      "paused_at": null,
+      "elapsed_sec": 0,
+      "memo": null,
+      "created_at": "2026-02-09T09:00:00Z",
+      "updated_at": "2026-02-09T09:02:00Z",
+      "program_run": 1
+    }
+  },
+  {
+    "model": "runs.timerrun",
+    "pk": 3,
+    "fields": {
+      "order_index_snapshot": 3,
+      "timer_name_snapshot": "リフレッシュ 10分",
+      "duration_sec_snapshot": 600,
+      "sound_file_snapshot": "sounds/school_bell.mp3",
+      "category_snapshot": "refresh",
+      "status": "pending",
+      "started_at": null,
+      "ended_at": null,
+      "paused_at": null,
+      "elapsed_sec": 0,
+      "memo": null,
+      "created_at": "2026-02-09T09:00:00Z",
+      "updated_at": "2026-02-09T09:02:00Z",
+      "program_run": 1
+    }
+  },
+
+  {
+    "model": "runs.timerrun",
+    "pk": 4,
+    "fields": {
+      "order_index_snapshot": 1,
+      "timer_name_snapshot": "集中 25分",
+      "duration_sec_snapshot": 1500,
+      "sound_file_snapshot": "sounds/bell.mp3",
+      "category_snapshot": "focus",
+      "status": "finished",
+      "started_at": "2026-02-08T12:00:00Z",
+      "ended_at": "2026-02-08T12:25:00Z",
+      "paused_at": null,
+      "elapsed_sec": 1500,
+      "memo": "最後まで集中できた",
+      "created_at": "2026-02-08T12:00:00Z",
+      "updated_at": "2026-02-08T12:25:00Z",
+      "program_run": 2
+    }
+  },
+  {
+    "model": "runs.timerrun",
+    "pk": 5,
+    "fields": {
+      "order_index_snapshot": 2,
+      "timer_name_snapshot": "休憩 5分",
+      "duration_sec_snapshot": 300,
+      "sound_file_snapshot": "sounds/melody_part3.mp3",
+      "category_snapshot": "break",
+      "status": "finished",
+      "started_at": "2026-02-08T12:25:00Z",
+      "ended_at": "2026-02-08T12:30:00Z",
+      "paused_at": null,
+      "elapsed_sec": 300,
+      "memo": null,
+      "created_at": "2026-02-08T12:25:00Z",
+      "updated_at": "2026-02-08T12:30:00Z",
+      "program_run": 2
+    }
+  },
+  {
+    "model": "runs.timerrun",
+    "pk": 6,
+    "fields": {
+      "order_index_snapshot": 3,
+      "timer_name_snapshot": "リフレッシュ 10分",
+      "duration_sec_snapshot": 600,
+      "sound_file_snapshot": "sounds/melody_part2.mp3",
+      "category_snapshot": "refresh",
+      "status": "skipped",
+      "started_at": null,
+      "ended_at": null,
+      "paused_at": null,
+      "elapsed_sec": 0,
+      "memo": "時間が無くてスキップ",
+      "created_at": "2026-02-08T12:30:00Z",
+      "updated_at": "2026-02-08T12:40:00Z",
+      "program_run": 2
+    }
+  }
+]

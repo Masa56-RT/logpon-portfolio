@@ -1,0 +1,50 @@
+[
+  {
+    "model": "runs.programrun",
+    "pk": 1,
+    "fields": {
+      "program_name_snapshot": "河川の勉強セット",
+      "status": "draft",
+      "started_at": "2026-02-09T09:00:00Z",
+      "ended_at": null,
+      "paused_at": null,
+      "total_elapsed_sec": 120,
+      "created_at": "2026-02-09T09:00:00Z",
+      "updated_at": "2026-02-09T09:02:00Z",
+      "user": 1,
+      "program": 1
+    }
+  },
+  {
+    "model": "runs.programrun",
+    "pk": 2,
+    "fields": {
+      "program_name_snapshot": "短時間集中セット",
+      "status": "finished",
+      "started_at": "2026-02-08T12:00:00Z",
+      "ended_at": "2026-02-08T12:30:00Z",
+      "paused_at": null,
+      "total_elapsed_sec": 1800,
+      "created_at": "2026-02-08T12:00:00Z",
+      "updated_at": "2026-02-08T12:30:00Z",
+      "user": 1,
+      "program": 2
+    }
+  },
+  {
+    "model": "runs.programrun",
+    "pk": 3,
+    "fields": {
+      "program_name_snapshot": "テスト用プログラム（短縮）",
+      "status": "draft",
+      "started_at": null,
+      "ended_at": null,
+      "paused_at": null,
+      "total_elapsed_sec": 0,
+      "created_at": "2026-02-10T10:00:00Z",
+      "updated_at": "2026-02-10T10:00:00Z",
+      "user": 1,
+      "program": 3
+    }
+  }
+]

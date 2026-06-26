@@ -1,0 +1,61 @@
+{% extends "common/base.html" %}
+{% load static %}
+
+{% block title %}日報{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'css/runs/daily-reports.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- 最初のdivはauth-wrapperと共通化して問題ないかを調べる -->
+<div class="report-page">
+
+    <h1 class="page-title">日報</h1>
+
+    <p class="page-desc">
+        日報報告用の記録（当日午前3時〜翌日午前3時）を出力できます。
+    </p>
+
+    <section class="summary">
+        <h2 class="section-title">集中時間</h2>
+
+        <div class="copy-row">
+            <div class="time-box">
+                <span class="time-value" id="totalHours">{{ total_hours }}</span>
+                <span class="time-unit">時間</span>
+            </div>
+            <button type="button" class="btn copy-btn" data-copy-target="totalHours" aria-label="時間をコピー">
+                <iconify-icon icon="uil:copy" class="copyIcon"></iconify-icon>
+            </button>
+
+            <div class="time-box">
+                <span class="time-value" id="totalMinutes">{{ total_minutes }}</span>
+                <span class="time-unit">分</span>
+            </div>
+            <button type="button" class="btn copy-btn" data-copy-target="totalMinutes" aria-label="分をコピー">
+                <iconify-icon icon="uil:copy" class="copyIcon"></iconify-icon>
+            </button>
+        </div>
+    </section>
+
+    <section class="report-body">
+        <div class="report-header">
+            <h2 class="section-title">コメント</h2>
+            <button type="button" class="btn copy-btn" data-copy-textarea="dailyReport" aria-label="コメントをコピー">
+                <iconify-icon icon="uil:copy" class="copyIcon"></iconify-icon>
+            </button>
+        </div>
+
+        <textarea id="dailyReport" class="report-textarea" readonly>{{ daily_report_text }}</textarea>
+    </section>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+</div>
+
+
+<!-- JSファイル -->
+ <script src="{% static 'js/runs/daily-reports.js' %}" defer></script>
+
+{% endblock %}

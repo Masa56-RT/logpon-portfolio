@@ -1,0 +1,130 @@
+# ======================================================================
+# 本番環境（EC2 + RDS）用 Docker Compose設定
+# ======================================================================
+# 開発環境との主な違い:
+# - dbサービスは含まれません（AWS RDSを使用）
+# - runserverではなくGunicornを使用
+# - Nginxコンテナを追加
+# - wait-for-itは使用しない（RDSは常時起動のため）
+# ======================================================================
+
+version: '3.8'
+
+services:
+  # ======================================
+  # Django + Gunicorn
+  # ======================================
+  web:
+    container_name: logpon-web
+    
+    # Dockerfileのビルド設定
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+        USERNAME: ${USERNAME:-appuser}
+        GROUPNAME: ${GROUPNAME:-appgroup}
+   
+    user: root  # 一時的にrootで実行
+
+    # 本番環境用コマンド: Gunicorn
+    # 開発環境: python manage.py runserver
+    # 本番環境: gunicorn
+    command: >
+      sh -c "
+      mkdir -p /src/staticfiles /src/mediafiles &&
+      chown -R appuser:appgroup /src &&
+      su appuser -c 'python manage.py migrate' && 
+      su appuser -c 'python manage.py collectstatic --noinput' &&
+      exec su appuser -c 'exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 60 --access-logfile - --error-logfile - --log-level info'
+      "
+    
+    # ボリュームマウント
+    volumes:
+      - ./src:/src
+      - static_volume:/src/staticfiles
+      - media_volume:/src/mediafiles
+      - logs_volume:/var/log/gunicorn
+    
+    # ポート番号（Nginxからのみアクセス）
+    expose:
+      - "8000"
+    
+    # 環境変数
+    environment:
+      - TZ=${TZ}
+      - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
+    
+    # .envファイルから環境変数を読み込む
+    env_file:
+      - .env
+    
+    # 再起動ポリシー（本番環境用：常に再起動）
+    restart: always
+    
+    # ヘルスチェック（本番環境用）
+    #healthcheck:
+     # test: ["CMD-SHELL", "curl -f http://localhost:8000/health/ || exit 1"]
+     # interval: 30s
+     # timeout: 10s
+     # retries: 3
+     # start_period: 40s
+
+  # ======================================
+  # Nginx（リバースプロキシ + 静的ファイル配信）
+  # ======================================
+  nginx:
+    container_name: logpon-nginx
+    image: nginx:1.27-alpine
+    
+    # Nginx設定ファイルのマウント
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - static_volume:/src/staticfiles:ro
+      - media_volume:/src/mediafiles:ro
+    
+    # ポート番号（ALBからアクセス）
+    ports:
+      - "80:80"
+    
+    # webサービスに依存（ヘルスチェックが成功するまで待機）
+    depends_on:
+      - web    
+    
+    # 再起動ポリシー
+    restart: always
+    
+    # ヘルスチェック
+   # healthcheck:
+     # test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost/health/ || exit 1"]
+      #interval: 30s
+      #timeout: 10s
+      #retries: 3
+      #start_period: 20s
+
+# ======================================
+# 名前付きボリューム
+# ======================================
+volumes:
+  # 静的ファイル用ボリューム
+  static_volume:
+    driver: local
+  
+  # メディアファイル用ボリューム
+  media_volume:
+    driver: local
+  
+  # ログ用ボリューム
+  logs_volume:
+    driver: local
+
+# ======================================
+# 注意事項
+# ======================================
+# - dbサービスは含まれていません（AWS RDSを使用）
+# - .envファイルのMYSQL_HOSTにRDSエンドポイントを設定してください
+# - DJANGO_SETTINGS_MODULE=config.settings.prod に設定してください
+# - 初回起動時は自動的にmigrateとcollectstaticが実行されます

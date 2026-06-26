@@ -1,0 +1,141 @@
+{% extends "common/base.html" %}
+{% load static %}
+
+{% block title %}プログラム実行{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'css/runs/program-runs.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- 最初のdivはauth-wrapperと共通化して問題ないかを調べる -->
+<div class="execute-page"
+    {% if program_run_id %}
+        data-program-run-id="{{ program_run_id }}"
+        data-api-url="{% url 'runs:program-runs-api' program_run_id %}"
+    {% endif %}
+>
+    <div class="execute-zone">
+        <!-- 左画面 -->
+        <div class="left-disp">
+
+            <section class="program-select">
+                <p>プログラム：</p>
+                <select name="program_id" class="program" id="programId">
+                    <option value="">プログラムを選択してください</option>
+                    {% for program in dict_programs.programs %}
+                        <option value="{{program.id}}">{{program.program_name}}</option>
+                    {% endfor %}
+                </select>
+            </section>
+
+            <!-- 【追加】JSへ渡す設定（URLとCSRF） -->
+            <div
+            id="config"
+            data-post-url="{% url 'runs:program-runs' %}"
+            data-csrf="{{ csrf_token }}"
+            data-start-url-template="/program-runs/__ID__/start/"
+            data-pause-url-template="/program-runs/__ID__/pause/"
+            data-resume-url-template="/program-runs/__ID__/resume/"
+            data-progress-url-template="/program-runs/__ID__/progress/"
+            data-skip-url-template="/program-runs/__ID__/skip/"
+            data-next-url-template="/program-runs/__ID__/next/"
+            data-interrupt-url-template="/program-runs/__ID__/interrupt/"
+            hidden
+            ></div>
+
+            <section class="timer-execute">
+                <div class="control-area">
+                    <div class="center-control">
+                        <button id="startBtn" type="button">
+                            <!-- iconはボタンを押すごとにplay, pauseを入れ替える -->
+                            <iconify-icon icon="uil:play" id="startIcon" class=""></iconify-icon>
+                            <iconify-icon icon="uil:pause" id="pauseIcon" class="hidden"></iconify-icon>
+                        </button>
+                        <button id="skipBtn" type="button" class="skip-btn">
+                            <iconify-icon icon="uil:skip-forward" id="skipIcon"></iconify-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="timerFace">
+                    <p id="currentTimerName"></p>
+                    <p id="remainingTime"></p>
+                </div>
+            </section>
+        </div>
+
+        <!-- 右画面 -->
+        <div class="right-disp">
+            
+            <section id="executeTimerList">
+                <!-- タイマーはバックエンドから取得したデータで作成する -->
+
+            </section>
+
+        </div>
+    </div>
+
+    <div class="link-btns">
+        <a class="btn link-left-btn" href="{% url 'runs:records' %}">実施記録</a>
+        <a class="btn link-left-btn" href="{% url 'runs:daily-reports' %}">日報</a>
+        <!-- programsのurls.pyができたらhrefの中を入れる -->
+        <a class="btn link-right-btn" href="">プログラム作成</a>
+    </div>
+
+</div>
+
+<!-- メモモーダル -->
+<section id="modal" class="modal" hidden>
+    <div id="modalOverlay">
+        <div id="modalArea">
+            <div class="modal-close">
+                <button type="button" id="closeBtn" class="modal-close-btn">×</button>
+            </div>
+            <h2 id="memoModalTitle" class="modal-title">メモ作成</h2>
+            <p id="timerNameSnapshot">タイマー名</p>
+            <div class="modal-form">
+                <label for="memoTextarea" class="modal-label">メモ：</label>
+                <textarea id="memoTextarea" class="modal-textarea"></textarea>
+            </div>
+            <div>
+                <button class="btn modal-btn" type="button" id="memoSendBtn">作成</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 復元確認モーダル -->
+<section id="resumeModal" class="modal" hidden>
+    <div id="resumeModalOverlay">
+        <div id="resumeModalArea">
+            <div class="modal-close">
+                <button type="button" id="resumeCloseBtn" class="modal-close-btn">×</button>
+            </div>
+            <h2 class="modal-title">プログラム復元</h2>
+            <p id="resumeInfoText">
+                X月X日X時X分ごろに<br>
+                中断したプログラムがあります。
+            </p>
+            <p>
+                プログラムの状態を復元しますか？<br>
+                （「破棄」を選んだ場合は、二度と復元できません）
+            </p>
+
+            <div class="modal-actions">
+                <button type="button" class="btn" id="resumeYesBtn">復元</button>
+                <button type="button" class="btn" id="resumeNoBtn">破棄</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- JSファイル -->
+<!-- 前回中断データの有無をHTMLに埋め込み -->
+<script id="lastRunInfo" type="application/json">
+{{ last_run_info_json|safe }}
+</script>
+
+<script src="{% static 'js/runs/program-runs.js' %}" defer></script>
+
+{% endblock %}

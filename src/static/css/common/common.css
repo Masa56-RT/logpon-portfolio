@@ -1,0 +1,162 @@
+/* ログイン前画面の幅と要素の並びを指定、marginとgapは各cssで指定 */
+.auth-wrapper {
+    max-width: 1200px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+/* buttonタグの場合は`border:none;`を各cssで指定 */
+.btn {
+    width: 388px;
+    height: 48px;
+    color: var(--color-text-main);
+    background-color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    font-size: 1.125rem;
+}
+
+.btn:hover {
+    opacity: 0.6;
+}
+
+/* auth-formのmarginのみ各cssで指定 */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-form label {
+    font-size: 0.875rem;
+}
+
+.auth-form input {
+    width: 380px;
+    height: 38px;
+}
+
+/* .auth-formでエラーがあった場合の枠の着色 */
+.is-error {
+    border: solid 2px var(--color-warning);
+    border-radius: 5px;
+}
+
+.users-error-message {
+    color: red;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 1px 0;
+    list-style: none;
+    max-width: 380px;
+    /* ここから3つは日本語の禁則処理 */
+    overflow-wrap: anywhere;
+    word-break: normal;
+    line-break: strict;
+    /* ここまで */
+}
+
+/* プログラムを選択するプルダウンのデザイン */
+.program-select {
+    display: flex;
+    align-items: center;
+    font-size: 1.25rem;
+}
+
+.program {
+    width: 405px;
+    height: 44px;
+    background-color: var(--color-primary);
+    border-radius: 5px;
+    border: none;
+    padding: 0 10px;
+}
+/* ここまで */
+
+/* タイマーのカードを共通化 */
+.oneTimer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 488px;
+    height: 53px;
+    box-sizing: border-box;
+    padding: 0 20px;
+    font-size: 1.25rem;
+    border: 1px solid var(--color-frame);
+    box-shadow: 2px 2px 4px var(--color-frame);
+}
+
+/* モーダルに関する指定 */
+#modal,#programUpsertModal, #deleteModal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+}
+
+#modal[hidden],#programUpsertModal[hidden], 
+#deleteModal[hiiden] {
+    display: none !important;
+}
+
+#modalOverlay, #upsertModalOverlay, #deleteModalOverlay {
+    background: rgba(255, 255, 255, 0.8);
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: start center;
+    cursor: pointer;
+    padding: 48px 12px 24px;
+}
+
+#modalArea, #upsertModalArea, #deleteModalArea {
+    background: var(--color-bg);
+    box-shadow: 2px 4px 10px var(--color-frame);
+    border-radius: 10px;
+    width: 500px;
+    max-height: calc(100vh - 72px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 20px 60px;
+    box-sizing: border-box;
+    cursor: default;
+    z-index: 1100;
+}
+
+.modal-close {
+    align-self: flex-end;
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer
+}
+
+.modal-close:hover {
+    opacity: 0.6;
+}
+
+.modal-title {
+    margin: 0;
+}
+
+
+.modal-label {
+    font-size: 0.875rem;
+}
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-btn {
+    border: none;
+}
+/* モーダルに関する指定ここまで */

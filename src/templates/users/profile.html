@@ -1,0 +1,190 @@
+{% extends "common/base.html" %}
+{% load static %}
+
+{% block title %}ユーザー情報変更{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'css/users/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- 最初のdivはauth-wrapperと共通化できたらする -->
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+{% if messages %}
+<script>
+    window.__DJANGO_MESSAGES__ = [
+        {% for message in messages %}
+            { level: "{{ message.tags }}", text: "{{ message|escapejs }}" }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+</script>
+{% endif %}
+
+<div class="profile-page">
+    <h1 class="page-title">ユーザー情報変更</h1>
+    <div class="profile-grid">
+        <!-- 左画面 -->
+        <section class="profile-card">
+            <h2 class="panel-title">メールアドレス・ユーザー名</h2>
+            <p class="panel-descrip">メールアドレス・ユーザー名を変更したいときは、<br>
+            各項目の「変更」ボタンをクリックしてください。</p>
+
+            <!-- メールアドレス -->
+            {% with open=email_form.errors %}
+            <div class="edit-row edit-email" data-field="email">
+                <div class="edit-row__head">
+                    <label class="edit-row__label">メールアドレス</label>
+                    <span class="edit-row__badge {% if not open %}is-hidden{% endif %}" data-badge>編集中</span>
+                </div>
+
+                <!-- 表示モード -->
+                <div class="edit-row__view {% if open %}is-hidden{% endif %}" data-view>
+                    <span class="edit-row__value" data-current>{{ request.user.email }}</span>
+                    <button type="button" class="btn edit-btn" data-edit>変更</button>
+                </div>
+
+                <!-- 編集モード（form） -->
+                <form class="edit-row__edit {% if not open %}is-hidden{% endif %}" 
+                 data-editForm method="post" action="{% url 'users:profile-email' user.id %}">
+                {% csrf_token %}
+                    <input type="email" name="email"
+                    value="{{ email_form.email.value|default_if_none:request.user.email }}"
+                    class="auth-form {% if email_form.email.errors %}is-error{% endif %}"
+                    autocomplete="email" data-input>
+
+                    <ul class="users-error-message 
+                    {% if not email_form.email.errors and not email_form.non_field_errors %}is-hidden{% endif %}"
+                    data-error>
+                        {% for e in email_form.email.errors %}<li>{{ e }}</li>{% endfor %}
+                        {% for e in email_form.non_field_errors %}<li>{{ e }}</li>{% endfor %}
+                    </ul>
+
+                    <div class="row-actions">
+                        <button type="button" class="btn cancel-btn" data-cancel>キャンセル</button>
+                        <button type="submit" class="btn save-btn">保存</button>                        
+                    </div>
+                </form>
+            </div>
+            {% endwith %}
+
+            <!-- ユーザー名 -->
+            {% with open=username_form.errors %}
+            <div class="edit-row" data-field="username">
+                <div class="edit-row__head">
+                    <label class="edit-row__label">ユーザー名</label>
+                    <span class="edit-row__badge {% if not open %}is-hidden{% endif %}" data-badge>編集中</span>
+                </div>
+                <div class="edit-row__view {% if open %}is-hidden{% endif %}" data-view>
+                    <span class="edit-row__value" data-current>{{ request.user.username }}</span>
+                    <button type="button" class="btn edit-btn" data-edit>変更</button>
+                </div>
+
+                <!-- 編集モード（form） -->
+                <form class="edit-row__edit {% if not open %}is-hidden{% endif %}"
+                 data-editForm method="post" action="{% url 'users:profile-username' user.id %}">
+                {% csrf_token %}
+                    <input type="text" name="username"
+                     value="{{ username_form.username.value|default_if_none:request.user.username }}"
+                     class="auth-form {% if username_form.username.errors %}is-error{% endif %}"
+                     autocomplete="username" data-input>
+
+                    <ul class="users-error-message 
+                     {% if not username_form.username.errors and not username_form.non_field_errors %}is-hidden{% endif %}"
+                      data-error>
+                        {% for e in username_form.username.errors %}<li>{{ e }}</li>{% endfor %}
+                        {% for e in username_form.non_field_errors %}<li>{{ e }}</li>{% endfor %}
+                    </ul>
+                    
+                    <div class="row-actions">
+                        <button type="button" class="btn cancel-btn" data-cancel>キャンセル</button>
+                        <button type="submit" class="btn save-btn">保存</button>                        
+                    </div>
+                </form>
+            </div>
+            {% endwith %}
+        </section>
+
+        <!-- 右画面 -->
+        <section class="profile-card">
+            <h2 class="panel-title">パスワード</h2>
+            <p class="panel-descrip">
+                パスワードを変更したいときは、<br>
+                現在のパスワードと新しいパスワードを入力して、<br>
+                「パスワード変更」ボタンをクリックしてください。
+            </p>
+
+            <form class="pw-form" method="post" action="{% url 'users:profile-password' user.id %}">
+                {% csrf_token %}
+                <!-- 現在のパスワード -->
+                <div class="pw-field">
+                    <label class="pw-label" for="id_current_password">現在のパスワード</label>
+
+                    <div class="pw-input-wrap">
+                        <input id="id_current_password" 
+                         class="auth-form {% if password_form.current_password.errors %}is-error{% endif %}"
+                         type="password" name="old_password" autocomplete="current-password" data-pw>
+                        <button type="button" class="pw-toggle" aria-label="パスワードを表示" data-toggle>
+                            <iconify-icon icon="uil:eye" class="pwToggleIcon"></iconify-icon>
+                        </button>
+                    </div>
+                    <ul class="users-error-message {% if not password_form.current_password.errors %}is-hidden{% endif %}">
+                        {% for e in password_form.current_password.errors %}<li>{{ e }}</li>{% endfor %}
+                    </ul>
+                </div>
+
+                <!-- 新しいパスワード -->
+                <div class="pw-field">
+                    <label class="pw-label" for="id_new_password1">新しいパスワード</label>
+
+                    <div class="pw-input-wrap">
+                        <input id="id_new_password1" 
+                         class="auth-form {% if password_form.new_password1.errors %}is-error{% endif %}"
+                         type="password" name="new_password1" autocomplete="new-password" data-pw>
+                        <button type="button" class="pw-toggle" aria-label="パスワードを表示" data-toggle>
+                            <iconify-icon icon="uil:eye" class="pwToggleIcon"></iconify-icon>
+                        </button>
+                    </div>
+                    <ul class="users-error-message {% if not password_form.new_password1.errors %}is-hidden{% endif %}">
+                        {% for e in password_form.new_password1.errors %}<li>{{ e }}</li>{% endfor %}
+                    </ul>
+                </div>
+
+                <!-- 新しいパスワード（確認用） -->
+                <div class="pw-field">
+                    <label class="pw-label" for="id_new_password2">新しいパスワード（確認用）</label>
+
+                    <div class="pw-input-wrap">
+                        <input id="id_new_password2" 
+                         class="auth-form {% if password_form.new_password2.errors %}is-error{% endif %}"
+                         type="password" name="new_password2" autocomplete="new-password" data-pw>
+                        <button type="button" class="pw-toggle" aria-label="パスワードを表示" data-toggle>
+                            <iconify-icon icon="uil:eye" class="pwToggleIcon"></iconify-icon>
+                        </button>
+                    </div>
+                    <ul class="users-error-message {% if not password_form.new_password2.errors %}is-hidden{% endif %}">
+                        {% for e in password_form.new_password2.errors %}<li>{{ e }}</li>{% endfor %}
+                    </ul>
+                </div>
+
+                <!-- フィールド以外のエラー -->
+                <ul class="users-error-message {% if not password_form.non_field_errors %}is-hidden{% endif %}" >
+                    {% for e in password_form.non_field_errors %}<li>{{ e }}</li>{% endfor %}
+                </ul>
+
+                <button class="btn pass-btn" type="submit">パスワード変更</button>
+            </form>
+        </section>
+    </div>
+</div>
+
+
+
+
+
+<!-- JSファイル -->
+ <script src="{% static 'js/users/profile.js' %}" defer></script>
+
+
+
+{% endblock %}

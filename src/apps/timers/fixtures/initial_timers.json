@@ -1,0 +1,38 @@
+[
+  {
+    "model": "timers.timer",
+    "pk": 1,
+    "fields": {
+      "name": "集中 25分",
+      "category": "focus",
+      "user": 1,
+      "duration_seconds": 1500,
+      "sound": 1,
+      "created_at": "2026-02-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "timers.timer",
+    "pk": 2,
+    "fields": {
+      "name": "休憩 5分",
+      "category": "break",
+      "user": 1,
+      "duration_seconds": 300,
+      "sound": 2,
+      "created_at": "2026-02-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "timers.timer",
+    "pk": 3,
+    "fields": {
+      "name": "リフレッシュ 10分",
+      "category": "refresh",
+      "user": 1,
+      "duration_seconds": 600,
+      "sound": 2,
+      "created_at": "2026-02-01T00:00:00Z"
+    }
+  }
+]

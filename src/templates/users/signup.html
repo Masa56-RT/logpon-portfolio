@@ -1,0 +1,76 @@
+{% extends "common/base.html" %}
+{% load static %}
+
+{% block title %}新規登録{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'css/users/signup.css' %}">
+{% endblock %}
+
+{% block content %}
+<form method="post" action="{% url 'users:signup' %}">
+{% csrf_token %}
+
+    <div class="auth-wrapper">
+        <h2>新規登録</h2>
+        <!-- フォーム全体のエラー -->
+        {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+        <p class="users-error-message">{{ error }}</p>
+        {% endfor %}
+        {% endif %}
+
+        <div class="auth-form">
+            <label for="signup-email">メールアドレス</label>
+            <input type="email" name="email" id="signup-email"
+             class="{% if form.email.errors %}is-error{% endif %}" required>
+            <!-- メールアドレスに関するエラー -->
+            {% if form.email.errors %}
+            {% for error in form.email.errors %}            
+            <p class="users-error-message">{{ error }}</p>
+            {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="auth-form">
+            <label for="signup-username">ユーザ名</label>
+            <input type="text" name="username" id="signup-username"
+             class="{% if form.username.errors %}is-error{% endif %}" required>
+            <!-- ユーザ名に関するエラー -->
+            {% if form.username.errors %}            
+            {% for error in form.username.errors %}            
+            <p class="users-error-message">{{ error }}</p>
+            {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="auth-form">
+            <label for="signup-password1">パスワード</label>
+            <input type="password" name="password1" id="signup-password1"
+             class="{% if form.password1.errors %}is-error{% endif %}" required>
+            <!-- パスワード１に関するエラー -->
+            {% if form.password1.errors %}            
+            {% for error in form.password1.errors %}            
+            <p class="users-error-message">{{ error }}</p>
+            {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="auth-form">
+            <label for="signup-password2">パスワード（確認用）</label>
+            <input type="password" name="password2" id="signup-password2"
+             class="{% if form.password2.errors %}is-error{% endif %}" required>
+            <!-- パスワード２に関するエラー -->
+            {% if form.password2.errors %}
+            {% for error in form.password2.errors %}            
+            <p class="users-error-message">{{ error }}</p>
+            {% endfor %}
+            {% endif %}
+        </div>
+
+        <div>
+            <button class="btn" type="submit">新規登録</button>
+        </div>
+    </div>
+</form>
+{% endblock %}

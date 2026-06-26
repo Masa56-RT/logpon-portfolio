@@ -1,0 +1,309 @@
+.programs-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: calc(100vh - 96px);
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px;
+    flex: 1;
+}
+
+.programs-zone {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 90px 1fr; /* 中央は矢印用の細い列 */
+  grid-template-rows: minmax(0, 1fr);
+  gap: 16px;
+  margin: 25px 0 16px;
+  align-items: stretch;
+  min-height: 0;
+}
+
+.left-disp,
+.right-disp {
+  display: flex;
+  flex-direction: column;
+  min-height: 0; 
+}
+
+.right-lists {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+}
+
+.focus-block, .rest-block {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* 中央は矢印を縦中央に */
+.center-disp {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  min-height: 0;
+  padding-top: 79px;
+  box-sizing: border-box;
+}
+
+/* プログラム選択のプルダウンとしてmarginを除いて共通化 */
+.program-select {
+    margin-bottom: 9px;
+}
+/* ここまで */
+
+.program-modify {
+    display: flex;
+    gap: 22px;
+    margin-bottom: 10px;
+}
+
+.program-modify-btn {
+    width: 160px;
+    border: none;
+}
+
+.programName {
+    font-size: 10px;
+}
+
+/* タイマーが入るボックスを高さのみ各自設定で共通化して良い */
+#listInAProgram {
+    border: solid 1px var(--color-frame);
+    width: 525px;
+    box-sizing: border-box;
+    padding: 13px 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 13px;
+    min-height: 80px;
+    overflow: auto;
+    flex: 1;
+}
+/* ここまで */
+
+.category {
+    font-size: 1rem;
+    flex: 1;
+}
+
+.timerName {
+    flex: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    padding-left: 10px;
+}
+
+.duration {
+    flex: 1;
+    text-align: right;
+}
+
+.trash-btn {
+    border: none;
+    background: none;
+    font-size: 27px;
+    margin: 2px 0 0 10px;
+}
+
+#program-decide {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    border:solid 2px var(--color-header-current-text);
+    color: var(--color-header-current-text);
+    width: 525px;
+    background: var(--color-bg);
+    font-weight: 800;
+    transition: color 1s ease-in-out, border 1s ease-in-out;
+    z-index: 1;
+}
+
+#program-decide::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--color-accent);
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+    z-index: -1;
+    pointer-events: none;
+    
+}
+
+#program-decide.is-dirty {
+    color: var(--color-bg);
+    border: none;
+}
+
+#program-decide.is-dirty::before {
+    opacity: 1;
+}
+
+#program-decide.pulse::before {
+    animation: dirtyFade 2.2s ease-in-out 1;
+}
+
+@keyframes dirtyFade {
+    0%   { opacity: 0; }
+    40%  { opacity: 1; }
+    70%  { opacity: 0; }
+    100% { opacity: 1; } /* 最後はグラデで停止 */
+}
+
+.timer-add-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 84px;
+    height: 100%;
+    min-height: 0;
+    gap: 0;
+    padding-top: 0px;
+}
+
+.arrow-zone {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.timer-add-btn button {
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    flex: 0 0 auto;
+    width: auto;
+    height: auto;
+}
+
+.timer-add-icon {
+    font-size: 44px;
+    color: var(--color-primary);
+    pointer-events: none;
+}
+
+
+.timer-and-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3px;
+    flex: 0 0 auto;
+}
+
+.timer-and-link p {
+    font-size: 1.5rem;
+}
+
+.link-timers-btn {
+    width: 200px;
+}
+
+.timers-label {
+    font-size: 0.875rem;
+    margin: 0 0 6px;
+}
+
+
+
+/* タイマーが入るボックスを高さのみ各自設定で共通化して良い */
+#focusList {
+    border: solid 1px var(--color-frame);
+    width: 525px;
+    box-sizing: border-box;
+    padding: 13px 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 13px;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+}
+
+#restList {
+    border: solid 1px var(--color-frame);
+    width: 525px;
+    box-sizing: border-box;
+    padding: 13px 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 13px;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+}
+/* ここまで */
+
+/* タイマー選択状態 */
+.oneTimer.selected {
+  outline: 2px solid var(--color-header-current-text);
+  background: var(--color-selected-bg);
+}
+
+/* ドラッグ中に薄くなる */
+.oneTimer.dragging {
+    opacity: 0.5;
+}
+
+/* モーダル内の文字のレイアウト */
+#programCreateForm, #programEditForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 50px;
+}
+
+#deleteModalArea {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+#deleteModalArea p {
+    margin: 0;
+}
+
+/* display:flex;でもhiddenを効かせる設定 */
+#programCreateForm[hidden], #programEditForm[hidden] {
+  display: none !important;
+}
+
+/* モーダル内のinputの幅を広げる */
+.modal-form{
+    width: 100%;
+}
+
+/* 保存成功トースト */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  background: #111827;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity .2s;
+  z-index: 9999;
+}
+.toast.show {
+  opacity: 1;
+}

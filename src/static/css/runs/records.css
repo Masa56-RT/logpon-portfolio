@@ -1,0 +1,200 @@
+.page {
+  height: 100vh;
+  overflow: hidden;
+}
+
+main {
+  overflow: hidden;
+}
+
+/* 後でprogram-runsのexecute-pageと統一する */
+.records-page {
+    display: flex;
+    flex-direction: column;
+    width: min(1200px, 100%);
+    margin: 0 auto;
+    padding: 0 10px 20px;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.upper-disp { 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 25px 0 20px;
+    flex:0 0 auto
+}
+
+.upper-disp h2 {
+    font-size: 1.5rem;
+    margin: 0 0 11px;
+}
+
+.upper-disp p  {
+    font-size: 1.25rem;
+}
+.upper-disp input {
+    font-size: 1.25rem;
+    height: 44px;
+    background: var(--color-primary);
+    border: none;
+    border-radius: 3px;
+    padding: 0 10px;
+}
+
+.records-date-select {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+}
+
+.records-label {
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+/* ここはprogram-runsのexecute-zoneと揃えていいかも */
+.records-zone {
+    display: flex; 
+    gap: 13px;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.left-disp, .right-disp {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.left-disp {
+    flex: 1;
+    min-width: 0;
+}
+
+.right-disp {
+    flex: 3;
+    min-width: 0;
+}
+
+#recordedProgramList,
+#recordedTimerList {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    border: 1px solid var(--color-frame);
+    padding: 13px 10px;
+    flex:1;
+    min-height: 0;
+    overflow: auto;
+}
+
+.recordedCard {
+    padding: 0 20px;
+    box-sizing: border-box;
+    border: 1px solid var(--color-frame);
+    box-shadow: 2px 2px 4px var(--color-frame);
+    background: var(--color-bg);
+    height: 53px;
+}
+
+.recordedProgram {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    cursor: pointer;
+}
+.recordedProgram:hover {
+    opacity: 0.6;
+}
+
+.currentProgram::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 12px;
+    background: var(--color-accent);
+}
+
+.programInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-size: 0.75rem;
+    gap: 8px;
+}
+
+.programInfo p {
+    margin: 0;
+}
+
+.recordedTimer {
+    display: grid;
+    width:100%;
+    grid-template-columns: 120px 1fr 100px 1fr;
+    grid-template-rows: 53px;
+    justify-items: start;
+    align-items: center;
+    gap: 10px;
+    transform: scale(1);
+    transition: transform 0.2s ease-out;
+    cursor: pointer;
+}
+
+.startFinish {
+    font-size: 0.75rem;
+    margin: 0;
+}
+
+.recordedTimer:hover {
+    transform: scale(1.02);
+}
+
+.timerName {
+    font-size: 1.25rem;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+}
+
+.elapsedSec {
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.recordsMemo {
+    font-size: 0.75rem;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+}
+
+/* メモモーダル */
+/* gap以外はcommon.cssで指定 */
+#modalArea {
+    gap: 24px;
+}
+
+#timerNameSnapshot {
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.modal-textarea {
+    width: 380px;
+    height: 200px;
+    margin-bottom: 35px;
+}
+/* ここまで */

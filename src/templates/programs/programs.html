@@ -1,0 +1,262 @@
+{# templates/programs/programs.html #}
+{% extends "common/base.html" %}
+{% load static %}
+
+{% block title %}プログラム作成・一覧{% endblock %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'css/programs/programs.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- 最初のdivはauth-wrapperと共通化して問題ないかを調べる -->
+<div class="programs-page">
+  {% with has_program=selected_program_id %}
+    <div class="programs-zone">
+        <!-- 左画面 -->
+        <div class="left-disp">
+
+            <section class="program-select">
+                <p>プログラム：</p>
+                <select name="program_id" class="program" id="programId"
+                 data-base-url="{% url 'programs:list' %}"
+                 {% if not rows %}disabled{% endif %}>
+                    <!-- optionタグはバックエンドから取得したデータで作成する -->
+                  {% if rows %}
+                    {% for r in rows %}
+                      <option value="{{ r.program.id }}"
+                              {% if r.program.id == selected_program_id %}selected{% endif %}>
+                        {{ r.program.program_name }}
+                      </option>
+                    {% endfor %}
+                  {% else %}
+                    <option value="" selected>（プログラムがありません）</option>
+                  {% endif %}
+                </select>
+            </section>
+
+            <section class="program-modify">
+                <button type="button" class="btn program-modify-btn" id="programCreate">新規作成</button>
+                <button type="button" class="btn program-modify-btn" id="programEdit"
+                 {% if not selected_program_id %}disabled{% endif %}>編集</button>
+                <button type="button" class="btn program-modify-btn" id="programDelete"
+                 {% if not selected_program_id %}disabled{% endif %}>削除</button>
+            </section>
+
+            {% if selected_program_id %}
+              {% for r in rows %}
+                {% if r.program.id == selected_program_id %}
+                  <p class="timers-label" id="programName">プログラム名：{{ r.program.program_name }}</p>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              <p class="timers-label" id="programName">プログラム名：</p>
+            {% endif %}
+
+            <section id="listInAProgram">
+            {% if not rows %}
+              <p>まだプログラムがありません。<br>「新規作成」から作成してください。</p>
+            {% elif not selected_program_id %}
+              <p>左上のプルダウンからプログラムを選択してください。</p>
+            {% else %}
+              {% for r in rows %}
+                {% if r.program.id == selected_program_id %}
+                  {% with pts=r.program_timers %}
+                    {% if pts %}
+                      {% for pt in pts %}
+                        <div class="oneTimer"
+                            data-ptid="{{ pt.id }}"
+                            data-timer-id="{{ pt.timer.id }}"
+                            data-category="{{ pt.timer.category }}"
+                            draggable="true">
+                          <p class="category">{{ pt.timer.get_category_display }}</p>
+                          <p class="timerName">{{ pt.timer.name }}</p>
+                          <p class="duration">{% widthratio pt.timer.duration_seconds 60 1 %}分</p>
+
+                          <button type="button" class="trash-btn" data-action="removeFromProgram">
+                            <iconify-icon icon="iconamoon:trash" class="trash-icon"></iconify-icon>
+                          </button>
+                        </div>
+                      {% endfor %}
+                    {% else %}
+                      <p class="empty-program-msg">このプログラムにはまだタイマーが登録されていません。</p>
+                    {% endif %}
+                  {% endwith %}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+
+            </section>
+            <div>
+                <button type="button" class="btn" id="program-decide"
+                  {% if not selected_program_id %}disabled{% endif %}>
+                  確定
+                </button>
+            </div>                      
+
+        </div>
+
+        <!-- 中画面 -->
+        <div class="center-disp">
+
+            <section class="timer-add-btn">
+              <div class="arrow-zone">
+                <button type="button" id="focusAdd" {% if not selected_program_id %}disabled{% endif %}>
+                    <iconify-icon icon="fa:arrow-left" class="timer-add-icon" id="focusAddIcon"></iconify-icon>
+                </button>
+              </div>
+              <div class="arrow-zone">
+                <button type="button" id="restAdd" {% if not selected_program_id %}disabled{% endif %}>
+                    <iconify-icon icon="fa:arrow-left" class="timer-add-icon"  id="restADDIcon"></iconify-icon>
+                </button>
+              </div>                
+            </section>
+
+        </div>
+
+        <!-- 右画面 -->
+        <div class="right-disp">
+
+            <section class="timer-and-link">
+                <p>作成済みタイマー</p>
+                <a class="btn link-timers-btn" href="{% url 'timers:list' %}">タイマー作成・一覧</a>
+            </section>
+            
+            <div class="right-lists">
+              <div class="focus-block">
+                <p class="timers-label">集中：</p>
+                <section id="focusList">
+                    <!-- カテゴリがfocusに合致するもの -->
+                    {% if my_timers %}
+                      {% for t in my_timers %}
+                        {% if t.category == "focus" %}
+                          <div class="oneTimer" data-timer-id="{{ t.id }}" data-category="{{ t.category}}" tabindex="0">
+                            <p class="category">{{ t.get_category_display }}</p>
+                            <p class="timerName">{{ t.name }}</p>
+                            <p class="duration">
+                              {% widthratio t.duration_seconds 60 1 %}分
+                            </p>
+                          </div>
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+
+                </section>
+              </div>
+
+              <div class="rest-block">
+                <p class="timers-label">休憩・リフレッシュ：</p>
+                <section id="restList">
+                    <!-- カテゴリがfocusに合致しないもの -->
+                    {% if my_timers %}
+                      {% for t in my_timers %}
+                        {% if t.category != "focus" %}
+                          <div class="oneTimer" data-timer-id="{{ t.id }}" data-category="{{ t.category}}" tabindex="0">
+                            <p class="category">{{ t.get_category_display }}</p>
+                            <p class="timerName">{{ t.name }}</p>
+                            <p class="duration">
+                              {% widthratio t.duration_seconds 60 1 %}分
+                            </p>
+                          </div>
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                </section>
+              </div>
+            </div>
+
+        </div>
+    </div>
+  {% endwith %}
+</div>
+
+<!-- プログラム作成・変更モーダル -->
+<section id="programUpsertModal" class="modal"
+ {% if not open_upsert_modal %}hidden{% endif %}>
+    <div id="upsertModalOverlay">
+        <div id="upsertModalArea">
+            <div class="modal-close">
+                <button type="button" id="upsertCloseBtn" class="modal-close-btn">×</button>
+            </div>
+
+            <!-- 作成 -->
+            <form id="programCreateForm" method="post" action="{% url 'programs:list' %}"
+             {% if upsert_mode != "create" %}hidden{% endif %}>
+              {% csrf_token %}
+              {{ create_form.non_field_errors}}
+              <h2 id="createModalTitle" class="modal-title">プログラム作成</h2>
+              <div class="modal-form">
+                  <label class="modal-label" for="{{ create_form.program_name.id_for_label}}">新規プログラム名：</label>
+                  {{ create_form.program_name }}
+                  {{ create_form.program_name.errors }}
+              </div>
+              <div>
+                  <button class="btn modal-btn" type="submit">作成</button>
+              </div>
+            </form>
+
+            <!-- 編集 -->
+            {% if selected_program_id %}
+              {% for r in rows %}
+                {% if r.program.id == selected_program_id %}
+                  <form id="programEditForm" method="post" action="{% url 'programs:edit' r.program.id %}"
+                    {% if upsert_mode != "edit" %}hidden{% endif %}>
+                    {% csrf_token %}
+                    {{ r.form.non_field_errors }}
+
+                    <h2 id="editModalTitle" class="modal-title">プログラム編集</h2>
+                    <div class="modal-form">
+                        <label class="modal-label" for="{{ r.form.program_name.id_for_label }}">プログラム名：</label>
+                        {{ r.form.program_name }}
+                        {{ r.form.program_name.errors }}
+                    </div>
+                    <div>
+                        <button class="btn modal-btn" type="submit">更新</button>
+                    </div>              
+                  </form>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- プログラム削除モーダル -->
+<section id="deleteModal" class="modal" hidden>
+    <div id="deleteModalOverlay">
+        <div id="deleteModalArea">
+            <div class="modal-close">
+                <button type="button" id="deleteCloseBtn" class="modal-close-btn">×</button>
+            </div>
+            <h2 id="deleteModalTitle" class="modal-title">プログラム削除</h2>
+            <p class="delete-desctiption">このプログラムを削除します。</p>
+            <p id="deleteProgramName">
+              {% if selected_program_id %}
+                {% for r in rows %}
+                  {% if r.program.id == selected_program_id %}
+                    プログラム名：{{ r.program.program_name }}
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+                （プログラム名）
+              {% endif %}
+            </p>
+
+            {% if selected_program_id %}
+              <form method="post" action="{% url 'programs:delete' selected_program_id %}">
+                {% csrf_token %}
+                <div>
+                    <button class="btn modal-btn" type="submit">削除</button>
+                </div>
+              </form>
+            {% else %}
+              <button class="btn modal-btn" type="button" disabled>削除</button>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- JSファイル -->
+<script src="{% static 'js/programs/programs.js' %}" defer></script>
+
+{% endblock %}

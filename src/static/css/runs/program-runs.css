@@ -1,0 +1,273 @@
+.execute-page {
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex: 1;
+}
+
+.execute-zone {
+    display: flex;
+    align-items: stretch;
+    margin-top: 22px;
+    gap: 40px;
+    flex: 1;
+}
+
+.left-disp {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 0;
+}
+
+/* プログラム選択のプルダウンとしてmarginを除いて共通化 */
+.program-select {
+    margin-bottom: 36px;
+}
+/* ここまで */
+
+.timer-execute {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+#startBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 55px;
+    height: 55px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    margin-bottom: 56px;
+    cursor: pointer;
+    border: none;
+}
+
+#startBtn:hover {
+    opacity: 0.6;
+}
+
+#startIcon, #pauseIcon {
+    font-size: 41px;
+    color: var(--color-bg);
+}
+/* スタートだけ偏るので調整 */
+#startIcon {
+    margin-left: 5px;
+}
+
+.control-area {
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+.center-control {
+    position: relative;
+}
+
+.skip-btn {
+    width: 44px;
+    height: 44px;
+    border: solid 2px var(--color-header-current-text);
+    background: none;
+    border-radius: 50%;
+    position: absolute;
+    right: -75px;
+    top: 25%;
+    transform: translateY(-50%);
+    box-sizing: border-box;
+    cursor: pointer;
+}
+.skip-btn:hover {
+    background: var(--color-accent);
+    border: none;
+}
+
+#skipIcon {
+    font-size: 30px;
+    color: var(--color-header-current-text);
+    margin-top: 2px;
+}
+
+.skip-btn:hover #skipIcon {
+    color: var(--color-bg);
+}
+
+.timerFace {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 55px;
+    position: relative;
+    width: 411px;
+    height: 411px;
+    border-radius: 50%;
+    --deg:0deg;
+    background: conic-gradient(
+        #ffffff 0deg,
+        #ffffff var(--deg),
+        #53b5da var(--deg),
+        #aae3e3 360deg
+    );
+}
+
+.timerFace::after {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    border-radius: 50%;
+    background: var(--color-bg);
+}
+
+#currentTimerName {
+    font-size: 1.25rem;
+    margin: 107px 0 56px;
+    padding: 0 40px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+}
+
+#remainingTime {
+    font-size: 6.25rem;
+    margin: 0;
+}
+
+/* 表示が擬似要素（白抜き）に隠れないよう調整 */
+#currentTimerName, #remainingTime {
+    position: relative;
+    z-index: 1;
+}
+
+.right-disp {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+/* timerlistとしてある程度共通化できそう */
+#executeTimerList {
+    border: 1px solid var(--color-frame);
+    width: 525px;
+    height: 702px;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+    padding: 13px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    align-items: center;
+    overflow: auto;
+    flex: 1; /* 伸びるかテスト */
+}
+/* ここまで */
+
+/* アニメーションを除いて共通化 */
+.oneTimer {
+    transform: scale(1);
+    transition: transform 0.2s ease-out;
+    cursor: pointer;
+    background: var(--color-bg);
+    display: grid;
+    grid-template-columns: 110px 1fr 80px;
+    align-items: center;
+    justify-items: start;
+}
+/* ここまで */
+.oneTimer[data-category="break"],
+.oneTimer[data-category="refresh"] {
+    cursor: default;
+}
+
+.oneTimer[data-category="focus"]:hover {
+    transform: scale(1.02);
+}
+
+.oneTimer p {
+    margin: 0;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+}
+.category {
+    font-size: 1rem;
+    
+}
+
+.timerName {
+    font-size: 1.25rem;
+}
+
+.duration {
+    font-size: 1.25rem;
+    justify-self: end;
+}
+
+.finishedOneTimer {
+    background: var(--color-finished-timer-bg);
+    color: var(--color-text-muted);
+}
+
+.currentOneTimer {
+    position: relative;
+}
+
+.currentOneTimer::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 12px;
+    background: var(--color-accent);
+}
+
+.link-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;
+    place-items: center;
+    margin-bottom: 17px;
+}
+
+.link-btns .btn {
+    width: 231px;
+    font-size: 1.375rem;
+}
+
+.link-left-btn {
+    flex: 1;
+}
+
+.link-right-btn {
+    flex: 2;
+}
+
+/* メモモーダル */
+/* gap以外はcommon.cssで指定 */
+#modalArea {
+    gap: 24px;
+}
+
+#timerNameSnapshot {
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.modal-textarea {
+    width: 380px;
+    height: 200px;
+    margin-bottom: 35px;
+}
+
+/* スタートボタンを入れ替える時に付与するクラス */
+.hidden {
+    display: none;
+}
