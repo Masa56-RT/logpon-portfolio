@@ -1,0 +1,14 @@
+project_name = "logpon"
+aws_region   = "ap-northeast-1"
+
+ec2_instance_type = "t4g.micro"
+db_instance_class = "db.t4g.micro"
+
+db_name     = "logpon"
+db_username = "logpon_admin"
+
+# SSH is disabled by default. Prefer SSM Session Manager.
+enable_ssh        = false
+ec2_key_name      = ""
+ssh_allowed_cidrs = []
+
