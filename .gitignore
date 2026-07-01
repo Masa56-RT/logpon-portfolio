@@ -86,6 +86,7 @@ celerybeat.pid
 # Docker
 .docker/
 docker-compose.override.yml
+docker-compose.local.yml
 
 # Test / tooling
 .cache/

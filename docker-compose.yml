@@ -38,6 +38,7 @@ services:
       chown -R appuser:appgroup /src &&
       wait-for-it.sh "$${MYSQL_HOST}:$${MYSQL_PORT:-3306}" -t 60 -- &&
       su appuser -c 'python manage.py migrate' && 
+      su appuser -c 'python manage.py loaddata apps/timers/fixtures/initial_sounds.json' &&
       su appuser -c 'python manage.py collectstatic --noinput' &&
       exec su appuser -c 'exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 60 --access-logfile - --error-logfile - --log-level info'
       "
