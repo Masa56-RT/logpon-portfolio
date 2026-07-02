@@ -1,6 +1,6 @@
 # Terraform for Logpon Portfolio
 
-このディレクトリは、ログポンを AWS EC2 + RDS MySQL にデプロイするための最小 Terraform 構成です。
+このディレクトリは、ログポンを AWS EC2 + RDS MySQL にデプロイするための最小 Terraform 構成を管理する。
 
 ## 方針
 
@@ -29,24 +29,24 @@
 
 ## コスト注意
 
-`terraform plan` までは基本的にリソースは作成されません。
+`terraform plan` までは基本的にリソースは作成されない。
 
-実際にコストが発生し得るのは `terraform apply` 後です。特に次のリソースに注意してください。
+実際にコストが発生するのは `terraform apply` 後である。特に次のリソースに注意する。
 
 - EC2
 - RDS MySQL
 - RDS storage
-- Elastic IP / public IPv4
+- Elastic IP
 - Secrets Manager secret
 - EBS volume
 
-この構成では NAT Gateway は作成しません。
+この構成では NAT Gateway は作成しない。
 
-`terraform destroy` 後は、Elastic IP の解放忘れに注意してください。
+`terraform destroy` 後は、Elastic IP の解放忘れに注意する。
 
 ## 秘密情報の扱い
 
-次の値は Git にコミットしないでください。
+次の値およびファイルは Git にコミットしない。
 
 - `terraform.tfvars`
 - `terraform.tfstate`
@@ -56,51 +56,51 @@
 - DB パスワード
 - 実際の AWS アカウント固有情報
 
-このリポジトリでは `terraform.tfvars.example` だけを管理対象にします。
+このリポジトリでは `terraform.tfvars.example` だけを管理対象にする。
 
 ## plan までの手順
 
-Terraform を初めて実行する前に、AWS CLI の認証情報を設定してください。
+Terraform を初めて実行する前に、AWS CLI の認証情報を設定する。
 
 ```bash
 aws sts get-caller-identity
 ```
 
-想定した AWS アカウントが表示されることを確認します。
+想定した AWS アカウントが表示されることを確認する。
 
-次に、サンプルをコピーしてローカル専用の変数ファイルを作ります。
+次に、サンプルをコピーしてローカル専用の変数ファイルを作る。
 
 ```bash
 cd terraform
 cp terraform.tfvars.example terraform.tfvars
 ```
 
-`terraform.tfvars` は Git 管理しません。
+`terraform.tfvars` は Git 管理しない。
 
-初期化します。
+初期化する。
 
 ```bash
 terraform init
 ```
 
-フォーマットと構文確認をします。
+フォーマットと構文確認をする。
 
 ```bash
 terraform fmt
 terraform validate
 ```
 
-作成予定の差分だけ確認します。
+作成予定のリソースを確認する。
 
 ```bash
 terraform plan
 ```
 
-ここまででは AWS リソースを作成しません。
+ここまででは AWS リソースを作成しない。
 
 ## apply前チェックリスト
 
-`terraform apply` は AWS リソースを実際に作成し、コストが発生し得ます。実行前に必ず次を確認します。
+`terraform apply` は AWS リソースを実際に作成し、コストが発生するため、実行前に必ず plan の内容、コスト発生リソース、次の事項を確認する。
 
 - `aws sts get-caller-identity` で想定した AWS アカウントであることを確認する
 - AWS リージョンが `ap-northeast-1` であることを確認する
@@ -118,31 +118,59 @@ terraform plan
 - 作業開始時刻と終了予定時刻を決める
 - 検証後に `terraform destroy` することを決めてから実行する
 
-## apply について
-
-`terraform apply` は AWS リソースを実際に作成し、コストが発生し得ます。
-
-このリポジトリでは、意図せず実行しないでください。実行前に必ず plan の内容とコスト発生リソースを確認します。
-
 ## 初回デプロイの流れ
 
-初回検証では、Terraform で AWS リソースを作成した後、EC2 上でアプリを配置して動作確認します。
+初回検証では、Terraform で AWS リソースを作成した後、EC2 上でアプリを配置して動作確認する。
 
 1. `terraform apply` で AWS リソースを作成する
-2. `terraform output -raw ec2_public_ip` で Elastic IP を確認する
-3. `terraform output -raw rds_endpoint` で RDS endpoint を確認する
-   - EC2 上の Django コンテナから RDS MySQL に接続するときの `MYSQL_HOST` に使う
-4. `terraform output -raw rds_master_user_secret_arn` で RDS secret ARN を確認する
-   - RDS 接続に必要なマスターパスワードが保存されている Secrets Manager secret の場所を確認する
+2. `terraform apply` の出力から、初回デプロイで使う値を控える
+   - `ec2_public_ip`
+     - ブラウザで `http://<Elastic IP>/` にアクセスするときに使う
+     - `.env` の `DJANGO_ALLOWED_HOSTS` に設定する
+     - `.env` の `DJANGO_CSRF_TRUSTED_ORIGINS` に `http://<Elastic IP>` として設定する
+   - `rds_endpoint`
+     - `.env` の `MYSQL_HOST` に設定する
+3. sensitive output の RDS secret ARN を取得する
+
+   ```bash
+   terraform output -raw rds_master_user_secret_arn
+   ```
+
+   - Secrets Manager から RDS の `username` / `password` を取得するときの `--secret-id` に使う
    - secret ARN 自体はパスワードではないが、公開しない
-5. AWS Systems Manager Session Manager で EC2 に接続する
-6. EC2 上で `docker --version` / `docker compose version` / `aws --version` を確認する
-7. EC2 上でアプリケーションコードを取得する
+4. AWS Systems Manager Session Manager で EC2 に接続する
+5. EC2 上で基本コマンドを確認する
+
+   ```bash
+   whoami
+   pwd
+   docker --version
+   docker compose version
+   aws --version
+   ```
+
+6. EC2 上でアプリケーションコードを取得する
    - このリポジトリの、ポートフォリオ公開用・AWS 簡易構成用に調整したコードを取得する
-8. EC2 上で `.env` を作成する
+
+   ```bash
+   sudo mkdir -p /opt/logpon
+   sudo chown ssm-user:ssm-user /opt/logpon
+   cd /opt/logpon
+   git clone https://github.com/<your-account>/<repo-name>.git .
+   ls
+   git status
+   ```
+
+7. EC2 上で `.env` を作成する
    - `.env.example` をもとに、EC2 上だけで使う実行時設定ファイルとして作成する
-9. `.env` の権限を `chmod 600 .env` にする
-10. Secrets Manager から RDS のマスターパスワードを取得する
+
+   ```bash
+   cp .env.example .env
+   chmod 600 .env
+   ls -la .env
+   ```
+
+8. Secrets Manager から RDS のマスターパスワードを取得する
 
     ```bash
     aws secretsmanager get-secret-value \
@@ -151,7 +179,13 @@ terraform plan
       --output text
     ```
 
-11. `.env` に RDS 接続情報、Django 公開先情報、Django secret key を設定する
+9. `DJANGO_SECRET_KEY` を生成する
+
+    ```bash
+    python3 -c "import secrets; print(secrets.token_urlsafe(50))"
+    ```
+
+10. `.env` に RDS 接続情報、Django 公開先情報、Django secret key を設定する
     - RDS 接続情報:
 
       ```env
@@ -172,32 +206,41 @@ terraform plan
     - Django secret key:
 
       ```env
-      DJANGO_SECRET_KEY=<EC2上で生成した値>
+      DJANGO_SECRET_KEY=<9で生成した値>
       ```
 
-    - `DJANGO_SECRET_KEY` の生成例:
+    入力後、RDS 接続情報、Django 公開先情報、`DJANGO_SECRET_KEY` に設定漏れがないことを確認する。
 
-      ```bash
-      python3 -c "import secrets; print(secrets.token_urlsafe(50))"
-      ```
+11. `sudo docker compose up --build -d` でアプリを起動する
 
-12. `docker compose up --build -d` でアプリを起動する
-13. `docker compose ps` と `docker compose logs` で起動状態を確認する
-14. `http://<Elastic IP>/health/` にアクセスしてヘルスチェックを確認する
-15. `http://<Elastic IP>/` にアクセスして画面表示を確認する
-16. 検証が終わったら `terraform destroy` で削除する
-17. AWS コンソールで EC2 / RDS / Elastic IP / EBS / Secrets Manager に削除漏れがないか確認する
+    ```bash
+    sudo docker compose up --build -d
+    sudo docker compose ps
+    sudo docker compose logs --tail=100
+    ```
 
-`.env` は EC2 上の実行時設定ファイルとして作成し、リポジトリには含めません。
-DB パスワード、Secrets Manager の値、`DJANGO_SECRET_KEY` などの秘密情報は、README、`.tf`、`terraform.tfvars.example`、`user_data` に書きません。
-また、Terraform の `aws_instance.web.user_data` は tfstate に残る可能性があるため、秘密情報を書きません。
+12. EC2 内からヘルスチェックとトップページを確認する
+
+    ```bash
+    curl -i http://localhost/health/
+    curl -I http://localhost/
+    ```
+
+13. ブラウザから `http://<Elastic IP>/health/` にアクセスしてヘルスチェックを確認する
+14. ブラウザから `http://<Elastic IP>/` にアクセスして画面表示を確認する
+15. 検証が終わったら `terraform destroy` で削除する
+16. AWS コンソールで EC2 / RDS / Elastic IP / EBS / Secrets Manager に削除漏れがないか確認する
+
+`.env` は EC2 上の実行時設定ファイルとして作成し、リポジトリには含めない。
+DB パスワード、Secrets Manager の値、`DJANGO_SECRET_KEY` などの秘密情報は、README、`.tf`、`terraform.tfvars.example`、`user_data` に書かない。
+また、Terraform の `aws_instance.web.user_data` は tfstate に残る可能性があるため、秘密情報を書かない。
 
 ## destroy について
 
-検証後に削除する場合は、作成したリソースを Terraform で削除します。
+検証後に削除する場合は、作成したリソースを Terraform で削除する。
 
 ```bash
 terraform destroy
 ```
 
-`destroy` も実リソースを削除する操作なので、実行前に対象リソースを必ず確認してください。
+`destroy` も実リソースを削除する操作であるため、実行前に対象リソースを必ず確認する。

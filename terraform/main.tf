@@ -184,7 +184,12 @@ resource "aws_instance" "web" {
     #!/bin/bash
     set -eux
     dnf update -y
-    dnf install -y docker git
+    dnf install -y docker git curl
+    mkdir -p /usr/local/lib/docker/cli-plugins
+    curl -SL \
+      https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-linux-aarch64 \
+      -o /usr/local/lib/docker/cli-plugins/docker-compose
+    chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
     systemctl enable --now docker
     usermod -aG docker ec2-user
   EOF
