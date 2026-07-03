@@ -26,6 +26,7 @@
 - RDS subnet group
 - Security Group
 - EC2 IAM Role / Instance Profile
+- Route 53 A record
 
 ## コスト注意
 
@@ -77,6 +78,16 @@ cp terraform.tfvars.example terraform.tfvars
 
 `terraform.tfvars` は Git 管理しない。
 
+Route 53 の A レコードを Terraform で作成する場合は、手動作成済みの Public Hosted Zone に合わせて `terraform.tfvars` に次を設定する。
+
+```hcl
+enable_route53_record = true
+hosted_zone_name      = "example.com"
+app_domain_name       = "logpon.example.com"
+```
+
+Hosted Zone 自体は Terraform 管理外とし、`terraform destroy` 後も残す。A レコードは Terraform 管理対象であるため、`terraform destroy` 時に削除される。
+
 初期化する。
 
 ```bash
@@ -109,6 +120,7 @@ terraform plan
 - `terraform validate` が成功していることを確認する
 - `terraform plan` の結果が、想定したリソースのみ add で、change/destroy が 0 であることを確認する
   - 現時点の目安: `Plan: 18 to add, 0 to change, 0 to destroy.`
+  - Route 53 A レコード作成を有効にした場合の目安: `Plan: 19 to add, 0 to change, 0 to destroy.`
 - plan に `aws_nat_gateway` が含まれていないことを確認する
 - RDS が `publicly_accessible = false` であることを確認する
 - RDS の `instance_class` が `db.t4g.micro` であることを確認する
@@ -126,8 +138,13 @@ terraform plan
 2. `terraform apply` の出力から、初回デプロイで使う値を控える
    - `ec2_public_ip`
      - ブラウザで `http://<Elastic IP>/` にアクセスするときに使う
+     - Route 53 A レコードを作成しない場合は、`.env` の `DJANGO_ALLOWED_HOSTS` に設定する
+     - Route 53 A レコードを作成しない場合は、`.env` の `DJANGO_CSRF_TRUSTED_ORIGINS` に `http://<Elastic IP>` として設定する
+   - `app_domain_name`
+     - Route 53 A レコードを作成した場合に使う
+     - ブラウザで `http://<app_domain_name>/` にアクセスするときに使う
      - `.env` の `DJANGO_ALLOWED_HOSTS` に設定する
-     - `.env` の `DJANGO_CSRF_TRUSTED_ORIGINS` に `http://<Elastic IP>` として設定する
+     - `.env` の `DJANGO_CSRF_TRUSTED_ORIGINS` に `http://<app_domain_name>` として設定する
    - `rds_endpoint`
      - `.env` の `MYSQL_HOST` に設定する
 3. sensitive output の RDS secret ARN を取得する
@@ -199,8 +216,8 @@ terraform plan
     - Django 公開先情報:
 
       ```env
-      DJANGO_ALLOWED_HOSTS=<Elastic IP>,127.0.0.1,localhost
-      DJANGO_CSRF_TRUSTED_ORIGINS=http://<Elastic IP>
+      DJANGO_ALLOWED_HOSTS=<app_domain_name>,127.0.0.1,localhost
+      DJANGO_CSRF_TRUSTED_ORIGINS=http://<app_domain_name>
       ```
 
     - Django secret key:
@@ -226,8 +243,12 @@ terraform plan
     curl -I http://localhost/
     ```
 
-13. ブラウザから `http://<Elastic IP>/health/` にアクセスしてヘルスチェックを確認する
-14. ブラウザから `http://<Elastic IP>/` にアクセスして画面表示を確認する
+13. ブラウザからヘルスチェックを確認する
+    - Route 53 A レコードを作成した場合: `http://<app_domain_name>/health/`
+    - Route 53 A レコードを作成しない場合: `http://<Elastic IP>/health/`
+14. ブラウザから画面表示を確認する
+    - Route 53 A レコードを作成した場合: `http://<app_domain_name>/`
+    - Route 53 A レコードを作成しない場合: `http://<Elastic IP>/`
 15. 検証が終わったら `terraform destroy` で削除する
 16. AWS コンソールで EC2 / RDS / Elastic IP / EBS / Secrets Manager に削除漏れがないか確認する
 

@@ -76,3 +76,26 @@ variable "db_allocated_storage" {
   default     = 20
 }
 
+variable "enable_route53_record" {
+  description = "Whether to create a Route 53 A record for the application domain."
+  type        = bool
+  default     = false
+}
+
+variable "hosted_zone_name" {
+  description = "Existing public Route 53 hosted zone name, such as example.com. Leave empty when enable_route53_record is false."
+  type        = string
+  default     = ""
+}
+
+variable "app_domain_name" {
+  description = "Fully qualified application domain name, such as logpon.example.com. Leave empty when enable_route53_record is false."
+  type        = string
+  default     = ""
+}
+
+variable "route53_record_ttl" {
+  description = "TTL in seconds for the Route 53 A record."
+  type        = number
+  default     = 300
+}

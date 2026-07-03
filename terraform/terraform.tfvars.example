@@ -12,3 +12,9 @@ enable_ssh        = false
 ec2_key_name      = ""
 ssh_allowed_cidrs = []
 
+# Route 53 hosted zone is created manually and kept outside terraform destroy.
+# Set enable_route53_record=true in terraform.tfvars when deploying with a domain.
+enable_route53_record = false
+hosted_zone_name      = ""
+app_domain_name       = ""
+route53_record_ttl    = 300

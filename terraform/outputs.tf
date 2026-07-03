@@ -23,3 +23,8 @@ output "rds_master_user_secret_arn" {
   value       = aws_db_instance.mysql.master_user_secret[0].secret_arn
   sensitive   = true
 }
+
+output "app_domain_name" {
+  description = "Application domain name when Route 53 A record creation is enabled."
+  value       = var.enable_route53_record ? var.app_domain_name : null
+}
