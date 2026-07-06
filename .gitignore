@@ -83,6 +83,10 @@ staticfiles/
 celerybeat-schedule
 celerybeat.pid
 
+# Let's Encrypt / Certbot runtime files
+certbot/conf/
+certbot/www/
+
 # Docker
 .docker/
 docker-compose.override.yml

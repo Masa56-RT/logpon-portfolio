@@ -11,6 +11,14 @@ resource "aws_security_group" "web" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description = "HTTPS from internet"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   dynamic "ingress" {
     for_each = var.enable_ssh ? [1] : []
 
@@ -61,4 +69,3 @@ resource "aws_security_group" "rds" {
     Name = "${var.project_name}-rds-sg"
   }
 }
-

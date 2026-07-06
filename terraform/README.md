@@ -142,9 +142,11 @@ terraform plan
      - Route 53 A レコードを作成しない場合は、`.env` の `DJANGO_CSRF_TRUSTED_ORIGINS` に `http://<Elastic IP>` として設定する
    - `app_domain_name`
      - Route 53 A レコードを作成した場合に使う
-     - ブラウザで `http://<app_domain_name>/` にアクセスするときに使う
+     - ブラウザで `https://<app_domain_name>/` にアクセスするときに使う
+     - `.env` の `APP_DOMAIN_NAME` に設定する
      - `.env` の `DJANGO_ALLOWED_HOSTS` に設定する
-     - `.env` の `DJANGO_CSRF_TRUSTED_ORIGINS` に `http://<app_domain_name>` として設定する
+     - `.env` の `DJANGO_CSRF_TRUSTED_ORIGINS` に `https://<app_domain_name>` として設定する
+     - certbot の `-d` に指定する
    - `rds_endpoint`
      - `.env` の `MYSQL_HOST` に設定する
 3. sensitive output の RDS secret ARN を取得する
@@ -216,8 +218,14 @@ terraform plan
     - Django 公開先情報:
 
       ```env
+      APP_DOMAIN_NAME=<app_domain_name>
       DJANGO_ALLOWED_HOSTS=<app_domain_name>,127.0.0.1,localhost
-      DJANGO_CSRF_TRUSTED_ORIGINS=http://<app_domain_name>
+      DJANGO_CSRF_TRUSTED_ORIGINS=https://<app_domain_name>
+      DJANGO_SECURE_SSL_REDIRECT=True
+      DJANGO_SECURE_PROXY_SSL_HEADER=True
+      DJANGO_CSRF_COOKIE_SECURE=True
+      DJANGO_SESSION_COOKIE_SECURE=True
+      DJANGO_SECURE_HSTS_SECONDS=0
       ```
 
     - Django secret key:
@@ -226,9 +234,27 @@ terraform plan
       DJANGO_SECRET_KEY=<9で生成した値>
       ```
 
-    入力後、RDS 接続情報、Django 公開先情報、`DJANGO_SECRET_KEY` に設定漏れがないことを確認する。
+    入力後、RDS 接続情報、Django 公開先情報、`DJANGO_SECRET_KEY` に設定漏れがないことを確認する。`APP_DOMAIN_NAME` と certbot の `-d` には同じドメイン名を使う。
 
-11. `sudo docker compose up --build -d` でアプリを起動する
+11. certbot standalone で Let's Encrypt 証明書を取得する
+    - nginx 起動前に実行する
+    - `--email` には自分のメールアドレスを指定する
+    - `-d` には `.env` の `APP_DOMAIN_NAME` と同じ値を指定する
+
+    ```bash
+    mkdir -p certbot/conf
+    sudo docker run --rm \
+      -p 80:80 \
+      -v /opt/logpon/certbot/conf:/etc/letsencrypt \
+      certbot/certbot certonly \
+      --standalone \
+      -d <app_domain_name> \
+      --email <your-email> \
+      --agree-tos \
+      --no-eff-email
+    ```
+
+12. `sudo docker compose up --build -d` でアプリを起動する
 
     ```bash
     sudo docker compose up --build -d
@@ -236,24 +262,21 @@ terraform plan
     sudo docker compose logs --tail=100
     ```
 
-12. EC2 内からヘルスチェックとトップページを確認する
+13. EC2 内から nginx の応答を確認する
 
     ```bash
-    curl -i http://localhost/health/
     curl -I http://localhost/
+    curl -kI https://localhost/health/ -H "Host: <app_domain_name>"
     ```
 
-13. ブラウザからヘルスチェックを確認する
-    - Route 53 A レコードを作成した場合: `http://<app_domain_name>/health/`
-    - Route 53 A レコードを作成しない場合: `http://<Elastic IP>/health/`
-14. ブラウザから画面表示を確認する
-    - Route 53 A レコードを作成した場合: `http://<app_domain_name>/`
-    - Route 53 A レコードを作成しない場合: `http://<Elastic IP>/`
-15. 検証が終わったら `terraform destroy` で削除する
-16. AWS コンソールで EC2 / RDS / Elastic IP / EBS / Secrets Manager に削除漏れがないか確認する
+14. ブラウザから `https://<app_domain_name>/health/` にアクセスしてヘルスチェックを確認する
+15. ブラウザから `https://<app_domain_name>/` にアクセスして画面表示を確認する
+16. 検証が終わったら `terraform destroy` で削除する
+17. AWS コンソールで EC2 / RDS / Elastic IP / EBS / Secrets Manager に削除漏れがないか確認する
 
 `.env` は EC2 上の実行時設定ファイルとして作成し、リポジトリには含めない。
-DB パスワード、Secrets Manager の値、`DJANGO_SECRET_KEY` などの秘密情報は、README、`.tf`、`terraform.tfvars.example`、`user_data` に書かない。
+DB パスワード、Secrets Manager の値、`DJANGO_SECRET_KEY`、Let's Encrypt の秘密鍵などの秘密情報は、README、`.tf`、`terraform.tfvars.example`、`user_data` に書かない。
+`certbot/conf` は証明書と秘密鍵を含むため、Git に含めない。
 また、Terraform の `aws_instance.web.user_data` は tfstate に残る可能性があるため、秘密情報を書かない。
 
 ## destroy について

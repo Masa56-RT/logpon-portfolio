@@ -184,7 +184,7 @@ resource "aws_instance" "web" {
     #!/bin/bash
     set -eux
     dnf update -y
-    dnf install -y docker git curl
+    dnf install -y docker git
     mkdir -p /usr/local/lib/docker/cli-plugins
     curl -SL \
       https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-linux-aarch64 \

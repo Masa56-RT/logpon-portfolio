@@ -5,16 +5,27 @@ upstream django {
 
 server {
     listen 80;
-    # 独自ドメイン設定後に server_name example.com www.example.com; のように変更する
-    server_name _;
+    server_name ${APP_DOMAIN_NAME};
+    charset utf-8;
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name ${APP_DOMAIN_NAME};
     charset utf-8;
 
     access_log /var/log/nginx/logpon_access.log main;
     error_log /var/log/nginx/logpon_error.log warn;
 
+    ssl_certificate /etc/letsencrypt/live/${APP_DOMAIN_NAME}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${APP_DOMAIN_NAME}/privkey.pem;
+
     client_max_body_size 20M;
 
-    # 静的ファイル
     location /static/ {
         alias /src/staticfiles/;
         expires 30d;
@@ -22,7 +33,6 @@ server {
         access_log off;
     }
 
-    # メディアファイル
     location /media/ {
         alias /src/mediafiles/;
         expires 7d;
@@ -30,7 +40,6 @@ server {
         access_log off;
     }
 
-    # ヘルスチェック（重要：Hostヘッダーを設定）
     location /health/ {
         proxy_pass http://django;
         proxy_set_header Host $http_host;
@@ -45,18 +54,17 @@ server {
         log_not_found off;
     }
 
-    # メインアプリケーション
     location / {
         proxy_pass http://django;
         proxy_set_header Host $http_host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        
+
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
         proxy_read_timeout 60s;
-        
+
         proxy_http_version 1.1;
         proxy_set_header Connection "";
     }
