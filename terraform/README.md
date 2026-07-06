@@ -114,13 +114,11 @@ terraform plan
 `terraform apply` は AWS リソースを実際に作成し、コストが発生するため、実行前に必ず plan の内容、コスト発生リソース、次の事項を確認する。
 
 - `aws sts get-caller-identity` で想定した AWS アカウントであることを確認する
-- AWS リージョンが `ap-northeast-1` であることを確認する
-- `git status` で `terraform.tfvars` / `terraform.tfstate` / `.env` がコミット対象に出ていないことを確認する
-  - `.terraform.lock.hcl` は Git 管理対象でよい
 - `terraform validate` が成功していることを確認する
 - `terraform plan` の結果が、想定したリソースのみ add で、change/destroy が 0 であることを確認する
   - 現時点の目安: `Plan: 18 to add, 0 to change, 0 to destroy.`
   - Route 53 A レコード作成を有効にした場合の目安: `Plan: 19 to add, 0 to change, 0 to destroy.`
+- `terraform.tfvars` / plan の内容が、東京リージョン `ap-northeast-1` 前提になっていることを確認する
 - plan に `aws_nat_gateway` が含まれていないことを確認する
 - RDS が `publicly_accessible = false` であることを確認する
 - RDS の `instance_class` が `db.t4g.micro` であることを確認する
@@ -129,6 +127,8 @@ terraform plan
 - Security Group で RDS `3306` が `0.0.0.0/0` に開いていないことを確認する
 - 作業開始時刻と終了予定時刻を決める
 - 検証後に `terraform destroy` することを決めてから実行する
+- 最後に `git status` で `terraform.tfvars` / `terraform.tfstate` / `.env` / `certbot/conf` がコミット対象に出ていないことを改めて確認する
+  - `.terraform.lock.hcl` は Git 管理対象でよい
 
 ## 初回デプロイの流れ
 
